@@ -1,17 +1,4 @@
 services:
-  stats-server:
-    build: stats-server
-    image: stats-server-image
-    container_name: stats-server-image
-    ports:
-      - "9090:9090"
-    depends_on:
-      - stats-db
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://stats-db:6432/stats
-      SPRING_DATASOURCE_USERNAME: user
-      SPRING_DATASOURCE_PASSWORD: pass
-
   stats-db:
     image: postgres:16.1
     container_name: stats-db
@@ -22,21 +9,32 @@ services:
       POSTGRES_PASSWORD: pass
       POSTGRES_DB: stats
 
-  ewm-service:
-    build: ewm-service
-    image: ewm-service-image
-    container_name: ewm-service-image
+  stats-server:
+    build:
+      context: ./stats-service/server
+      dockerfile: Dockerfile
+#    image: s-server-image //вместо этой строки с указанием
+#    образа приложегния , строка с указанием на путь к докер файлу приложения.
     ports:
-      - "8080:8080"
+      - "9090:9090"
     depends_on:
-      - ewm-db
+      - stats-db
 
-  ewm-db:
-    image: postgres:16.1
-    container_name: ewm-db
-    ports:
-      - "7433:5432"
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-      POSTGRES_DB: ewm
+#  ewm-service:
+#    build: ewm-service
+#    image: ewm-service-image
+#    container_name: ewm-service-image
+#    ports:
+#      - "8080:8080"
+#    depends_on:
+#      - ewm-db
+#
+#  ewm-db:
+#    image: postgres:16.1
+#    container_name: ewm-db
+#    ports:
+#      - "7433:5432"
+#    environment:
+#      POSTGRES_USER: user
+#      POSTGRES_PASSWORD: pass
+#      POSTGRES_DB: ewm
