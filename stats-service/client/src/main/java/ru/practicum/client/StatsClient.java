@@ -8,7 +8,14 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.util.stream.Collectors.joining;
 
 @Service
 public class StatsClient extends BaseClient {
@@ -24,16 +31,38 @@ public class StatsClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getStats(String start, String end, Boolean unique, ArrayList<String> uris) {
-        StringBuilder path = new StringBuilder("?start={" + start + "}&end={" + end+ "}");
+    public ResponseEntity<Object> getStats(String start, String end,
+                                           Boolean unique, ArrayList<String> uris) throws Exception {
+        String path = pathEncoder(start, end, unique, uris);
 
-        for (String u : uris) {
-            path.append("&uris={").append(uris).append("}");
+        return get(path);
+    }
+
+    private String encodeValue(String value) throws UnsupportedEncodingException {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
+    }
+
+    public String pathEncoder(String start, String end, Boolean unique, ArrayList<String> uris) throws Exception {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", "start");
+        requestParams.put("end", "end");
+        requestParams.put("unique", "unique");
+
+        for (String u: uris) {
+            requestParams.put("uris", "u");
         }
 
-        path.append("&unique={").append(unique).append("}");
+        String encodedURL = requestParams.keySet().stream()
+                .map(key -> {
+                    try {
+                        return key + "=" + encodeValue(requestParams.get(key));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(joining("&", "http://www.baeldung.com?", ""));
 
-        return get(String.valueOf(path));
+        return encodedURL;
     }
 }
 
