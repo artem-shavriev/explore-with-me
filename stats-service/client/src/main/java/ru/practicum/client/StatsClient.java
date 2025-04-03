@@ -31,9 +31,16 @@ public class StatsClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getStats(String start, String end,
+    public ResponseEntity<Object> getStatsUri(String start, String end,
                                            Boolean unique, ArrayList<String> uris) throws Exception {
-        String path = pathEncoder(start, end, unique, uris);
+        String path = pathEncoderUri(start, end, unique, uris);
+
+        return get(path);
+    }
+
+    public ResponseEntity<Object> getStats(String start, String end,
+                                              Boolean unique) throws Exception {
+        String path = pathEncoder(start, end, unique);
 
         return get(path);
     }
@@ -42,7 +49,7 @@ public class StatsClient extends BaseClient {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
 
-    public String pathEncoder(String start, String end, Boolean unique, ArrayList<String> uris) throws Exception {
+    public String pathEncoderUri(String start, String end, Boolean unique, ArrayList<String> uris) throws Exception {
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("start", "start");
         requestParams.put("end", "end");
@@ -51,6 +58,25 @@ public class StatsClient extends BaseClient {
         for (String u: uris) {
             requestParams.put("uris", "u");
         }
+
+        String encodedURL = requestParams.keySet().stream()
+                .map(key -> {
+                    try {
+                        return key + "=" + encodeValue(requestParams.get(key));
+                    } catch (UnsupportedEncodingException e) {
+                        throw new RuntimeException(e);
+                    }
+                })
+                .collect(joining("&", "http://www.baeldung.com?", ""));
+
+        return encodedURL;
+    }
+
+    public String pathEncoder(String start, String end, Boolean unique) throws Exception {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", "start");
+        requestParams.put("end", "end");
+        requestParams.put("unique", "unique");
 
         String encodedURL = requestParams.keySet().stream()
                 .map(key -> {

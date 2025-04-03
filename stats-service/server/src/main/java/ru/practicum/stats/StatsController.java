@@ -25,11 +25,9 @@ public class StatsController {
                                     @RequestParam(defaultValue = "false") Boolean unique,
                                     @RequestParam(required = false) ArrayList<String> uris) {
         if (uris == null) {
-            List<ViewStats> stats = statsServiceImpl.getStats(start, end, unique);
-            return stats;
+            return statsServiceImpl.getStats(start, end, unique);
         } else {
-            List<ViewStats> stats = statsServiceImpl.getStatsUri(start, end, unique, uris);
-            return stats;
+            return statsServiceImpl.getStatsUri(start, end, unique, uris);
         }
     }
 }
