@@ -20,21 +20,21 @@ services:
     depends_on:
       - stats-db
 
-#  ewm-service:
-#    build: ewm-service
-#    image: ewm-service-image
-#    container_name: ewm-service-image
-#    ports:
-#      - "8080:8080"
-#    depends_on:
-#      - ewm-db
-#
-#  ewm-db:
-#    image: postgres:16.1
-#    container_name: ewm-db
-#    ports:
-#      - "7433:5432"
-#    environment:
-#      POSTGRES_USER: user
-#      POSTGRES_PASSWORD: pass
-#      POSTGRES_DB: ewm
+  ewm-service:
+    build:
+      context: ./ewm-service
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - ewm-db
+
+  ewm-db:
+    image: postgres:16.1
+    container_name: ewm-db
+    ports:
+      - "7432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ewm
