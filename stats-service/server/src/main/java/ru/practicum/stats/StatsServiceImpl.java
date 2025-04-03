@@ -1,5 +1,6 @@
 package ru.practicum.stats;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,9 @@ import java.util.List;
 public class StatsServiceImpl implements StatsService {
     private final HitRepository repository;
 
-    public List<ViewStats> getStats(String start, String end, Boolean unique, ArrayList<String> uris) {
+    @Override
+    @Transactional
+    public List<ViewStats> getStatsUri(String start, String end, Boolean unique, ArrayList<String> uris) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         LocalDateTime timeStart = LocalDateTime.parse(start, formatter);
@@ -33,4 +36,24 @@ public class StatsServiceImpl implements StatsService {
                     .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
         }
     }
+
+    @Override
+    @Transactional
+    public List<ViewStats> getStats(String start, String end, Boolean unique) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        LocalDateTime timeStart = LocalDateTime.parse(start, formatter);
+        LocalDateTime timeEnd = LocalDateTime.parse(end, formatter);
+
+        if (unique == true) {
+            List<Object[]> stats = repository.findUniqueStatsInPeriod(timeStart, timeEnd);
+            return stats.stream()
+                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+        } else {
+            List<Object[]> stats = repository.findStatsInPeriod(timeStart, timeEnd);
+            return stats.stream()
+                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+        }
+    }
+
 }

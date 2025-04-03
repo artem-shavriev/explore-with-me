@@ -23,7 +23,13 @@ public class StatsController {
     @GetMapping
     public List<ViewStats> getStats(@RequestParam String start, @RequestParam String end,
                                     @RequestParam(defaultValue = "false") Boolean unique,
-                                    @RequestParam ArrayList<String> uris) {
-        return statsServiceImpl.getStats(start, end, unique, uris);
+                                    @RequestParam(required = false) ArrayList<String> uris) {
+        if (uris == null) {
+            List<ViewStats> stats = statsServiceImpl.getStats(start, end, unique);
+            return stats;
+        } else {
+            List<ViewStats> stats = statsServiceImpl.getStatsUri(start, end, unique, uris);
+            return stats;
+        }
     }
 }

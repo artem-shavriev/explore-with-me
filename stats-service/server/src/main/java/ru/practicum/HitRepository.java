@@ -32,4 +32,22 @@ public interface HitRepository extends JpaRepository<Hit, Integer> {
             @Param("end") LocalDateTime end,
             @Param("uris") List<String> uris
     );
+
+    @Query("SELECT h.app, h.uri, COUNT(h) as hits " +
+            "FROM Hit h " +
+            "WHERE h.timestamp BETWEEN :start AND :end " +
+            "GROUP BY h.app, h.uri order by hits desc")
+    List<Object[]> findStatsInPeriod(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
+
+    @Query("SELECT h.app, h.uri, COUNT(DISTINCT h.ip) as hits " +
+            "FROM Hit h " +
+            "WHERE h.timestamp BETWEEN :start AND :end " +
+            "GROUP BY h.app, h.uri order by hits desc")
+    List<Object[]> findUniqueStatsInPeriod(
+            @Param("start") LocalDateTime start,
+            @Param("end") LocalDateTime end
+    );
 }
