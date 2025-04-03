@@ -15,7 +15,7 @@ public interface HitRepository extends JpaRepository<Hit, Integer> {
             "FROM Hit h " +
             "WHERE h.uri IN :uris " +
             "AND h.timestamp BETWEEN :start AND :end " +
-            "GROUP BY h.app, h.uri")
+            "GROUP BY h.app, h.uri order by hits desc")
     List<Object[]> findUniqueStatsByUrisInPeriod(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
@@ -26,7 +26,7 @@ public interface HitRepository extends JpaRepository<Hit, Integer> {
             "FROM Hit h " +
             "WHERE h.uri IN :uris " +
             "AND h.timestamp BETWEEN :start AND :end " +
-            "GROUP BY h.app, h.uri")
+            "GROUP BY h.app, h.uri order by hits desc")
     List<Object[]> findStatsByUrisInPeriod(
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end,
