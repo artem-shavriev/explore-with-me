@@ -17,7 +17,6 @@
 		<module>stats-service/server</module>
 		<module>stats-service/dto</module>
 		<module>stats-service/client</module>
-        <module>ewm-service/exception</module>
     </modules>
 
 	<groupId>ru.practicum</groupId>

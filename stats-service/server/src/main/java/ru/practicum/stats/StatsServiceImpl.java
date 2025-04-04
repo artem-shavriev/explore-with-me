@@ -27,13 +27,10 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime timeEnd = LocalDateTime.parse(end, formatter);
 
         if (unique == true) {
-            List<Object[]> stats = repository.findUniqueStatsByUrisInPeriod(timeStart, timeEnd, uris);
-            return stats.stream()
-                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+            return repository.findUniqueStatsByUrisInPeriod(timeStart, timeEnd, uris);
+
         } else {
-            List<Object[]> stats = repository.findStatsByUrisInPeriod(timeStart, timeEnd, uris);
-            return stats.stream()
-                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+            return repository.findStatsByUrisInPeriod(timeStart, timeEnd, uris);
         }
     }
 
@@ -46,13 +43,10 @@ public class StatsServiceImpl implements StatsService {
         LocalDateTime timeEnd = LocalDateTime.parse(end, formatter);
 
         if (unique == true) {
-            List<Object[]> stats = repository.findUniqueStatsInPeriod(timeStart, timeEnd);
-            return stats.stream()
-                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+            return repository.findUniqueStatsInPeriod(timeStart, timeEnd);
+
         } else {
-            List<Object[]> stats = repository.findStatsInPeriod(timeStart, timeEnd);
-            return stats.stream()
-                    .map(row -> new ViewStats((String) row[0], (String) row[1], ((Number) row[2]).intValue())).toList();
+            return repository.findStatsInPeriod(timeStart, timeEnd);
         }
     }
 

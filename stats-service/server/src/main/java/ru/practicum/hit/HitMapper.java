@@ -3,7 +3,6 @@ package ru.practicum.hit;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.EndpointHit;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.hit.model.Hit;
 
 import java.time.LocalDateTime;
@@ -16,7 +15,7 @@ public class HitMapper {
 
     public Hit mapToHit(EndpointHit dto) {
         if (dto == null) {
-            throw new NotFoundException("HitDto не может быть равен null");
+            throw new NullPointerException("HitDto не может быть равен null");
         }
         Hit hit = new Hit();
 
