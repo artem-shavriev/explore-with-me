@@ -37,7 +37,7 @@ import ru.practicum.user.dto.UserShortDto;
         private Boolean requestModeration = true;
         private String state;
         @NotNull
-        private State title;
-        private State views;
+        private String title;
+        private Integer views;
     }
 

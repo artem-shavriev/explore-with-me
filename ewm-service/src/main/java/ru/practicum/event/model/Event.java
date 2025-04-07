@@ -17,6 +17,7 @@ import ru.practicum.location.Location;
 import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -34,8 +35,8 @@ public class Event {
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
-    @Column(name = "category", nullable = false)
-    private CategoryDto category;
+    @Column(name = "category_id", nullable = false)
+    private Integer category;
 
     @Column(name = "confirmed_requests")
     private Integer confirmedRequests;
@@ -50,29 +51,29 @@ public class Event {
     private LocalDateTime eventDate;
 
     @Column(name = "initiator", nullable = false)
-    private UserShortDto initiator;
+    private Integer initiator;
 
-    @Column(name = "location", nullable = false)
-    private Location location;
+    @Column(name = "event_location", nullable = false)
+    private List<Double> location;
 
     @Column(name = "paid", nullable = false)
     private Boolean paid;
 
-    @Column(name = "participantLimit", nullable = false)
+    @Column(name = "participant_limit", nullable = false)
     private Integer participantLimit;
 
     @Column(name = "published_on")
     private LocalDateTime published_on;
 
-    @Column(name = "requestModeration")
+    @Column(name = "request_moderation")
     private Boolean requestModeration = true;
 
     @Column(name = "state")
-    private State state;
+    private String state;
 
     @Column(name = "title", nullable = false)
-    private State title;
+    private String title;
 
     @Column(name = "views")
-    private State views;
+    private Integer views;
 }

@@ -28,6 +28,6 @@ public class EventShortDto {
     @NotNull
     private Boolean paid;
     @NotNull
-    private State title;
-    private State views;
+    private String title;
+    private Integer views;
 }

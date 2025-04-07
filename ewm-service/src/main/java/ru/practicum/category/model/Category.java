@@ -20,11 +20,11 @@ import lombok.ToString;
 @ToString
 @Builder
 @Entity
-@Table(name = "category", schema = "public")
+@Table(name = "event_category", schema = "public")
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name = "category", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
 }
