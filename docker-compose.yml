@@ -1,14 +1,40 @@
 services:
-  stats-server:
-    ports:
-      - "9090:9090"
-
   stats-db:
     image: postgres:16.1
+    container_name: stats-db
+    ports:
+      - "6432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: stats
+
+  stats-server:
+    build:
+      context: ./stats-service/server
+      dockerfile: Dockerfile
+#    image: s-server-image //вместо этой строки с указанием
+#    образа приложегния , строка с указанием на путь к докер файлу приложения.
+    ports:
+      - "9090:9090"
+    depends_on:
+      - stats-db
 
   ewm-service:
+    build:
+      context: ./ewm-service
+      dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    depends_on:
+      - ewm-db
 
   ewm-db:
     image: postgres:16.1
+    container_name: ewm-db
+    ports:
+      - "7432:5432"
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: ewm
