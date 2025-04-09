@@ -14,7 +14,7 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:7432/ewm-db
-#    url: jdbc:postgresql://ewm-db:5432/ewm-db
+    #url: jdbc:postgresql://ewm-db:5432/ewm-db
     driver-class-name: org.postgresql.Driver
     username: user
     password: pass

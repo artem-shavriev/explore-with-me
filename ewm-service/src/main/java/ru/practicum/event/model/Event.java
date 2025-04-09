@@ -66,7 +66,7 @@ public class Event {
     private LocalDateTime published_on;
 
     @Column(name = "request_moderation")
-    private Boolean requestModeration = true;
+    private Boolean requestModeration;
 
     @Column(name = "state")
     private String state;

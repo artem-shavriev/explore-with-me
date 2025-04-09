@@ -2,8 +2,8 @@ package ru.practicum.user;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.user.dto.NewUserRequest;
 import ru.practicum.user.dto.UserDto;
 
@@ -18,4 +18,10 @@ public interface UserService {
     UserDto addUser(NewUserRequest newUserRequest);
 
     void deleteUser(Integer userId);
+
+    List<ParticipationRequestDto> getUserRequests(Integer userId);
+
+    ParticipationRequestDto addParticipation(Integer userId, Integer eventId);
+
+    ParticipationRequestDto cancelRequest(Integer userId, Integer requestId);
 }
