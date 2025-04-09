@@ -52,6 +52,8 @@ public class ParticipationService {
                 .event(eventId).created(LocalDateTime.now()).build();
         if (!event.getRequestModeration()) {
             participationRequest.setStatus(String.valueOf(Status.CONFIRMED.toString()));
+            event.setConfirmedRequests(event.getConfirmedRequests() + 1);
+            eventRepository.save(event);
         } else {
             participationRequest.setStatus(Status.PENDING.toString());
         }
