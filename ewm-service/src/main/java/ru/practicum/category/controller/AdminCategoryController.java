@@ -15,7 +15,7 @@ import ru.practicum.category.dto.NewCategoryDto;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("admin/categories")
+@RequestMapping("/admin/categories")
 public class AdminCategoryController {
     private final CategoryService categoryService;
 
@@ -24,12 +24,12 @@ public class AdminCategoryController {
         return categoryService.addCategory(newCategoryDto);
     }
 
-    @DeleteMapping("{catId}")
+    @DeleteMapping("/{catId}")
     public void deleteCategoryById(@PathVariable Integer catId) {
         categoryService.deleteCategoryById(catId);
     }
 
-    @PatchMapping("{catId}")
+    @PatchMapping("/{catId}")
     public CategoryDto updateCategory(@RequestParam Integer catId,
                                       @RequestBody NewCategoryDto newCategoryDto) {
         return categoryService.updateCategory(catId, newCategoryDto);

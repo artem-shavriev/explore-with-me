@@ -3,6 +3,7 @@ package ru.practicum.compilation;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.compilation.dto.CompilationDto;
+import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.EventMapper;
 import ru.practicum.event.EventRepository;
@@ -33,5 +34,10 @@ public class CompilationMapper {
 
     public List<CompilationDto> mapToDto(List<Compilation> compilationsList) {
         return compilationsList.stream().map(this::mapToDto).toList();
+    }
+
+    public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {
+        return Compilation.builder().events(newCompilationDto.getEvents())
+                .pinned(newCompilationDto.getPinned()).title(newCompilationDto.getTitle()).build();
     }
 }
