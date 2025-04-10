@@ -3,6 +3,7 @@ package ru.practicum.event.controller;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,10 +37,13 @@ public class PublicEventController {
             return eventService.getEventsWithTimeRange(text, categories, paid, rangeStart,
                     rangeEnd, onlyAvailable, sort, from, size);
         } else {
-           return eventService.getEventsRange(text, categories, paid, onlyAvailable, sort, from, size);
+            return eventService.getEventsRange(text, categories, paid, onlyAvailable, sort, from, size);
         }
     }
 
     @GetMapping("/{id}")
-    public EventFullDto getEventById()
+    public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
+        eventService.addHit(request.getRequestURI(), request.getRemoteAddr());
+        return eventService.getEventById(id);
+    }
 }

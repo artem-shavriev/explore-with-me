@@ -2,7 +2,6 @@ package ru.practicum.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,6 +31,14 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflict(final ConflictException e) {
+        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+                .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(409).toString())
+                .timestamp(LocalDateTime.now().toString()).build();
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ApiError handleConflict(final ForbiddenException e) {
         return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(409).toString())
                 .timestamp(LocalDateTime.now().toString()).build();

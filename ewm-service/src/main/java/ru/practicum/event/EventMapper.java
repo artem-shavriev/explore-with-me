@@ -4,13 +4,18 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryService;
 import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
+import ru.practicum.location.Location;
 import ru.practicum.user.UserMapper;
 import ru.practicum.user.UserService;
 import ru.practicum.user.dto.UserShortDto;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -48,5 +53,60 @@ public class EventMapper {
 
     public List<EventShortDto> eventToShortDto(List<Event> events) {
         return events.stream().map(this::eventToShortDto).toList();
+    }
+
+    public EventFullDto eventToFullDto(Event event) {
+        EventFullDto eventFullDto = new EventFullDto();
+
+        eventFullDto.setId(event.getId());
+        eventFullDto.setAnnotation(event.getAnnotation());
+
+        CategoryDto category = categoryService.getByIdCategory(event.getCategory());
+        eventFullDto.setCategory(category);
+
+        eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
+        eventFullDto.setCreatedOn(event.getCreatedOn().format(formatter));
+        eventFullDto.setDescription(event.getDescription());
+        eventFullDto.setEventDate(event.getEventDate().format(formatter));
+
+        UserShortDto user = userMapper.dtoToShortDto(userService.getUserById(event.getInitiator()));
+        eventFullDto.setInitiator(user);
+
+        Location location = Location.builder().lat(event.getLocation().get(0)).lon(event.getLocation().get(1)).build();
+        eventFullDto.setLocation(location);
+
+        eventFullDto.setPaid(event.getPaid());
+        eventFullDto.setParticipantLimit(event.getParticipantLimit());
+        eventFullDto.setPublished_on(event.getPublished_on().format(formatter));
+        eventFullDto.setRequestModeration(event.getRequestModeration());
+        eventFullDto.setState(event.getState());
+        eventFullDto.setTitle(event.getTitle());
+        eventFullDto.setViews(event.getViews());
+
+        return eventFullDto;
+    }
+
+    public Event newEventDtoToEvent(NewEventDto newEventDto) {
+        Event event = new Event();
+        LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
+
+        event.setAnnotation(newEventDto.getAnnotation());
+        event.setCategory(newEventDto.getCategory().getId());
+        event.setDescription(newEventDto.getDescription());
+        event.setEventDate(newEventDate);
+
+        List<Double> location = new ArrayList<>();
+        Double lat = newEventDto.getLocation().getLat();
+        Double lon = newEventDto.getLocation().getLon();
+        location.add(lat);
+        location.add(lon);
+        event.setLocation(location);
+
+        event.setPaid(newEventDto.getPaid());
+        event.setParticipantLimit(newEventDto.getParticipantLimit());
+        event.setRequestModeration(newEventDto.getRequestModeration());
+        event.setTitle(newEventDto.getTitle());
+
+        return event;
     }
 }

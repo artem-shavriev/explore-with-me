@@ -30,20 +30,31 @@ public class UpdateEventUserRequest {
     private String stateAction;
     @Min(3)
     @Max(120)
-    private State title;
+    private String title;
 
     public boolean hasAnnotation() {
         return annotation != null;
     }
+    public boolean hasDescription() {
+        return description != null;
+    }
+
     public boolean hasCategory() {
         return category != null;
     }
-    public boolean hasPaid() {
-        return paid != null;
+
+    public boolean hasEventDate() {
+        return eventDate != null;
     }
+
     public boolean hasLocation() {
         return location != null;
     }
+
+    public boolean hasPaid() {
+        return paid != null;
+    }
+
     public boolean hasParticipantLimit() {
         return participantLimit != null;
     }

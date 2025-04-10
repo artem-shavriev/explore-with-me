@@ -27,6 +27,10 @@ public class ParticipationService {
         return participationMapper.mapToDto(participationRepository.findAllByRequester(requesterId));
     }
 
+    public List<ParticipationRequestDto> getParticipationByEvent(Integer eventId) {
+        return participationMapper.mapToDto(participationRepository.findAllByEvent(eventId));
+    }
+
     public ParticipationRequestDto addParticipation(Integer requesterId, Integer eventId) {
         if (!participationRepository.findAllByRequesterAndEvent(requesterId, eventId).isEmpty()) {
             throw new ConflictException("Такой запрос уже существует.");
@@ -50,7 +54,7 @@ public class ParticipationService {
 
         ParticipationRequest participationRequest = ParticipationRequest.builder().requester(requesterId)
                 .event(eventId).created(LocalDateTime.now()).build();
-        if (!event.getRequestModeration()) {
+        if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
             participationRequest.setStatus(String.valueOf(Status.CONFIRMED.toString()));
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
@@ -75,5 +79,9 @@ public class ParticipationService {
         participationRequest = participationRepository.save(participationRequest);
 
         return participationMapper.mapToDto(participationRequest);
+    }
+
+    public List<ParticipationRequestDto> findParticipationsByIdList(List<Integer> idList) {
+        return participationMapper.mapToDto(participationRepository.findParticipationsByIdList(idList));
     }
 }

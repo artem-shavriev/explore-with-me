@@ -13,6 +13,8 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllByCategoryOrderByEventDateDesc(Integer categoryId);
 
+    Page<Event> findAllByInitiatorOrderByViews(Integer initiator, Pageable pageable);
+
     @Query("SELECT e " +
             "FROM Event e " +
             "WHERE e.id IN :idList " +
@@ -29,22 +31,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
             "ORDER BY e.eventDate")
     Page<Event> getAvailableEventsWithTimeRangeSortEventDate(@Param("state") String state,
-                                       @Param("text") String text,
-                                       @Param("categories") List<Integer> categories,
-                                       @Param("paid") Boolean paid,
-                                       @Param("rangeStart") LocalDateTime rangeStart,
-                                       @Param("rangeEnd") LocalDateTime rangeEnd,
-                                       Pageable pageable);
-
-    @Query("SELECT e FROM Event e " +
-            "WHERE e.state = :state " +
-            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
-            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
-            "AND e.category IN :categories " +
-            "AND e.paid = :paid " +
-            "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "ORDER BY e.eventDate")
-    Page<Event> getEventsWithTimeRangeSortEventDate(@Param("state") String state,
                                                              @Param("text") String text,
                                                              @Param("categories") List<Integer> categories,
                                                              @Param("paid") Boolean paid,
@@ -58,10 +44,9 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
             "AND e.category IN :categories " +
             "AND e.paid = :paid " +
-            "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "ORDER BY e.views")
-    Page<Event> getAvailableEventsWithTimeRangeSortByViews(@Param("state") String state,
+            "ORDER BY e.eventDate")
+    Page<Event> getEventsWithTimeRangeSortEventDate(@Param("state") String state,
                                                     @Param("text") String text,
                                                     @Param("categories") List<Integer> categories,
                                                     @Param("paid") Boolean paid,
@@ -75,15 +60,32 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
             "AND e.category IN :categories " +
             "AND e.paid = :paid " +
+            "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
+            "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
+            "ORDER BY e.views")
+    Page<Event> getAvailableEventsWithTimeRangeSortByViews(@Param("state") String state,
+                                                           @Param("text") String text,
+                                                           @Param("categories") List<Integer> categories,
+                                                           @Param("paid") Boolean paid,
+                                                           @Param("rangeStart") LocalDateTime rangeStart,
+                                                           @Param("rangeEnd") LocalDateTime rangeEnd,
+                                                           Pageable pageable);
+
+    @Query("SELECT e FROM Event e " +
+            "WHERE e.state = :state " +
+            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
+            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
+            "AND e.category IN :categories " +
+            "AND e.paid = :paid " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "ORDER BY e.views")
     Page<Event> getEventsWithTimeRangeSortByViews(@Param("state") String state,
-                                                    @Param("text") String text,
-                                                    @Param("categories") List<Integer> categories,
-                                                    @Param("paid") Boolean paid,
-                                                    @Param("rangeStart") LocalDateTime rangeStart,
-                                                    @Param("rangeEnd") LocalDateTime rangeEnd,
-                                                    Pageable pageable);
+                                                  @Param("text") String text,
+                                                  @Param("categories") List<Integer> categories,
+                                                  @Param("paid") Boolean paid,
+                                                  @Param("rangeStart") LocalDateTime rangeStart,
+                                                  @Param("rangeEnd") LocalDateTime rangeEnd,
+                                                  Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.state = :state " +
@@ -95,11 +97,11 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
             "ORDER BY e.eventDate")
     Page<Event> getAvailableEventsSortByEventDate(@Param("state") String state,
-                                                             @Param("text") String text,
-                                                             @Param("categories") List<Integer> categories,
-                                                             @Param("paid") Boolean paid,
-                                                             @Param("now") LocalDateTime now,
-                                                             Pageable pageable);
+                                                  @Param("text") String text,
+                                                  @Param("categories") List<Integer> categories,
+                                                  @Param("paid") Boolean paid,
+                                                  @Param("now") LocalDateTime now,
+                                                  Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.state = :state " +
@@ -110,11 +112,11 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.eventDate > :now " +
             "ORDER BY e.eventDate")
     Page<Event> getEventsSortEventByDate(@Param("state") String state,
-                                                  @Param("text") String text,
-                                                  @Param("categories") List<Integer> categories,
-                                                  @Param("paid") Boolean paid,
-                                                  @Param("now") LocalDateTime now,
-                                                  Pageable pageable);
+                                         @Param("text") String text,
+                                         @Param("categories") List<Integer> categories,
+                                         @Param("paid") Boolean paid,
+                                         @Param("now") LocalDateTime now,
+                                         Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.state = :state " +
@@ -126,11 +128,11 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
             "ORDER BY e.views")
     Page<Event> getAvailableEventsSortByViews(@Param("state") String state,
-                                                  @Param("text") String text,
-                                                  @Param("categories") List<Integer> categories,
-                                                  @Param("paid") Boolean paid,
-                                                  @Param("now") LocalDateTime now,
-                                                  Pageable pageable);
+                                              @Param("text") String text,
+                                              @Param("categories") List<Integer> categories,
+                                              @Param("paid") Boolean paid,
+                                              @Param("now") LocalDateTime now,
+                                              Pageable pageable);
 
     @Query("SELECT e FROM Event e " +
             "WHERE e.state = :state " +
@@ -141,23 +143,23 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.eventDate > :now " +
             "ORDER BY e.views")
     Page<Event> getEventsSortByViews(@Param("state") String state,
-                                              @Param("text") String text,
-                                              @Param("categories") List<Integer> categories,
-                                              @Param("paid") Boolean paid,
-                                              @Param("now") LocalDateTime now,
-                                              Pageable pageable);
+                                     @Param("text") String text,
+                                     @Param("categories") List<Integer> categories,
+                                     @Param("paid") Boolean paid,
+                                     @Param("now") LocalDateTime now,
+                                     Pageable pageable);
+
+    @Query("SELECT e FROM Event e " +
+            "WHERE e.initiator IN :users " +
+            "AND e.state IN :states " +
+            "AND e.category IN :categories " +
+            "AND e.category IN :categories " +
+            "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
+            "ORDER BY e.views")
+    Page<Event> getEventsByAdminSortByViews(@Param("users") List<Integer> users,
+                                            @Param("states") List<String> states,
+                                            @Param("categories") List<Integer> categories,
+                                            @Param("rangeStart") LocalDateTime rangeStart,
+                                            @Param("rangeEnd") LocalDateTime rangeEnd,
+                                            Pageable pageable);
 }
-
-
-
-/*
-@Query("SELECT new ru.practicum.ViewStats(h.app, h.uri, COUNT(DISTINCT h.ip) as hits) " +
-        "FROM Hit h " +
-        "WHERE h.uri IN :uris " +
-        "AND h.timestamp BETWEEN :start AND :end " +
-        "GROUP BY h.app, h.uri order by hits desc")
-List<ViewStats> findUniqueStatsByUrisInPeriod(
-        @Param("start") LocalDateTime start,
-        @Param("end") LocalDateTime end,
-        @Param("uris") List<String> uris
-);*/
