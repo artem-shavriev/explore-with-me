@@ -68,6 +68,6 @@ public class UpdateEventUserRequest {
     }
 
     public boolean hasTitle() {
-        return title!= null;
+        return title != null;
     }
 }
