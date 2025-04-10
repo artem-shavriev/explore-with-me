@@ -18,6 +18,6 @@ public interface ParticipationRequestRepository extends JpaRepository<Participat
 
     @Query("SELECT p " +
             "FROM ParticipationRequest p " +
-            "WHERE p.id IN :List")
-    List<ParticipationRequest> findParticipationsByIdList(@Param("List") List<Integer> List);
+            "WHERE p.id IN :list")
+    List<ParticipationRequest> findParticipationsByIdList(@Param("list") List<Integer> list);
 }

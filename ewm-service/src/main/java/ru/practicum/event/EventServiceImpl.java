@@ -189,7 +189,7 @@ public class EventServiceImpl implements EventService {
                 throw new ForbiddenException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }
 
-            event.setState(StateActionToState(updateRequest.getStateAction()));
+            event.setState(stateActionToState(updateRequest.getStateAction()));
         }
 
         if (updateRequest.hasAnnotation()) {
@@ -312,7 +312,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateRequest.hasStateAction()) {
-            event.setState(StateActionToState(updateRequest.getStateAction()));
+            event.setState(stateActionToState(updateRequest.getStateAction()));
         }
 
         if (updateRequest.hasAnnotation()) {
@@ -447,7 +447,7 @@ public class EventServiceImpl implements EventService {
         hitClient.addHit(endpointHit);
     }
 
-    public String StateActionToState(String action) {
+    public String stateActionToState(String action) {
         if (action.equals(StateAction.PUBLISH_EVENT.toString())) {
             return State.PUBLISHED.toString();
         } else if (action.equals(StateAction.REJECT_EVENT.toString())) {

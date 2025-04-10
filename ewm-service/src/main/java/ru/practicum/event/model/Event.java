@@ -12,9 +12,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.location.Location;
-import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -63,7 +60,7 @@ public class Event {
     private Integer participantLimit;
 
     @Column(name = "published_on")
-    private LocalDateTime published_on;
+    private LocalDateTime publishedOn;
 
     @Column(name = "request_moderation")
     private Boolean requestModeration;

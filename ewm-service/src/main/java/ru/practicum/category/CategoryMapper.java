@@ -17,7 +17,7 @@ public class CategoryMapper {
     }
 
     public List<CategoryDto> mapToDto(List<Category> categories) {
-        return categories.stream().map(this :: mapToDto).toList();
+        return categories.stream().map(this::mapToDto).toList();
     }
 
     public Category newCategoryToCategory(NewCategoryDto newCategoryDto) {

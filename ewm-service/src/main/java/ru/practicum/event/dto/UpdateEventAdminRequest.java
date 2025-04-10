@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.event.model.State;
 import ru.practicum.location.Location;
 
 @NoArgsConstructor
@@ -35,6 +34,7 @@ public class UpdateEventAdminRequest {
     public boolean hasAnnotation() {
         return annotation != null;
     }
+
     public boolean hasDescription() {
         return description != null;
     }
@@ -58,13 +58,16 @@ public class UpdateEventAdminRequest {
     public boolean hasParticipantLimit() {
         return participantLimit != null;
     }
+
     public boolean hasRequestModeration() {
         return requestModeration != null;
     }
+
     public boolean hasStateAction() {
         return stateAction != null;
     }
+
     public boolean hasTitle() {
-        return title!= null;
+        return title != null;
     }
 }

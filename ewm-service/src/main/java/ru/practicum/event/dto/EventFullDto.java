@@ -7,7 +7,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.event.model.State;
 import ru.practicum.location.Location;
 import ru.practicum.user.dto.UserShortDto;
 
@@ -33,7 +32,7 @@ import ru.practicum.user.dto.UserShortDto;
         @NotNull
         private Boolean paid;
         private Integer participantLimit = 0;
-        private String published_on;
+        private String publishedOn;
         private Boolean requestModeration = true;
         private String state;
         @NotNull

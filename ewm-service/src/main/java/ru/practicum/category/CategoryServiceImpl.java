@@ -44,7 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto addCategory(NewCategoryDto newCategoryDto) {
-        if(!categoryRepository.findAllByName(newCategoryDto.getName()).isEmpty()) {
+        if (!categoryRepository.findAllByName(newCategoryDto.getName()).isEmpty()) {
             log.error("Запрос составлен некорректно.");
             throw new ConflictException("Категория с таким именем уже существует.");
         }
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена или недоступна."));
 
-        if(eventRepository.findAllByCategoryOrderByEventDateDesc(id).isEmpty()) {
+        if (eventRepository.findAllByCategoryOrderByEventDateDesc(id).isEmpty()) {
             log.error("Существуют события, связанные с категорией {}", category.getName());
             throw  new ConflictException("Существуют события, связанные с категорией.");
         }
@@ -75,7 +75,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(Integer id, NewCategoryDto newCategoryDto) {
-        if(!categoryRepository.findAllByName(newCategoryDto.getName()).isEmpty()) {
+        if (!categoryRepository.findAllByName(newCategoryDto.getName()).isEmpty()) {
             throw new ConflictException("Категория с таким именем уже существует");
         }
 

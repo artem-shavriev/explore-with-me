@@ -56,7 +56,7 @@ public interface EventService {
     List<ParticipationRequestDto> getParticipationRequests(Integer userId, Integer eventId);
 
     EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
-                                                        EventRequestStatusUpdateRequest StatusUpdateRequest);
+                                                        EventRequestStatusUpdateRequest statusUpdateRequest);
 
     void addHit(String uri, String ip);
 }
