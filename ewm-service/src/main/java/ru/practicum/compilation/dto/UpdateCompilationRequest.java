@@ -1,8 +1,5 @@
 package ru.practicum.compilation.dto;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +15,6 @@ import java.util.List;
 public class UpdateCompilationRequest {
     private List<Integer> events;
     private Boolean pinned;
-    @NotBlank
     @Size(min = 1, max = 50)
     private String title;
 

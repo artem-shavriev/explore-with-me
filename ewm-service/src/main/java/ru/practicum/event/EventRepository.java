@@ -87,68 +87,6 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                                   @Param("rangeEnd") LocalDateTime rangeEnd,
                                                   Pageable pageable);
 
-   /* @Query("SELECT e FROM Event e " +
-            "WHERE e.state = :state " +
-            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
-            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
-            "AND e.category IN :categories " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND e.eventDate > :now " +
-            "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
-            "ORDER BY e.eventDate")
-    Page<Event> getAvailableEventsSortByEventDate(@Param("state") String state,
-                                                  @Param("text") String text,
-                                                  @Param("categories") List<Integer> categories,
-                                                  @Param("paid") Boolean paid,
-                                                  @Param("now") LocalDateTime now,
-                                                  Pageable pageable);
-
-    @Query("SELECT e FROM Event e " +
-            "WHERE e.state = :state " +
-            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
-            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
-            "AND e.category IN :categories " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND e.eventDate > :now " +
-            "ORDER BY e.eventDate")
-    Page<Event> getEventsSortEventByDate(@Param("state") String state,
-                                         @Param("text") String text,
-                                         @Param("categories") List<Integer> categories,
-                                         @Param("paid") Boolean paid,
-                                         @Param("now") LocalDateTime now,
-                                         Pageable pageable);
-
-    @Query("SELECT e FROM Event e " +
-            "WHERE e.state = :state " +
-            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
-            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
-            "AND e.category IN :categories " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND e.eventDate > :now " +
-            "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
-            "ORDER BY e.views")
-    Page<Event> getAvailableEventsSortByViews(@Param("state") String state,
-                                              @Param("text") String text,
-                                              @Param("categories") List<Integer> categories,
-                                              @Param("paid") Boolean paid,
-                                              @Param("now") LocalDateTime now,
-                                              Pageable pageable);
-
-    @Query("SELECT e FROM Event e " +
-            "WHERE e.state = :state " +
-            "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
-            "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
-            "AND e.category IN :categories " +
-            "AND (:paid IS NULL OR e.paid = :paid) " +
-            "AND e.eventDate > :now " +
-            "ORDER BY e.views")
-    Page<Event> getEventsSortByViews(@Param("state") String state,
-                                     @Param("text") String text,
-                                     @Param("categories") List<Integer> categories,
-                                     @Param("paid") Boolean paid,
-                                     @Param("now") LocalDateTime now,
-                                     Pageable pageable);*/
-
     @Query("SELECT e FROM Event e " +
             "WHERE (:users IS NULL OR e.initiator IN :users) " +
             "AND (:states IS NULL OR e.state IN :states) " +

@@ -1,7 +1,6 @@
 package ru.practicum.event.controller;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,11 +8,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.practicum.event.EventMapper;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
-import ru.practicum.event.model.Event;
 
 import java.util.List;
 
@@ -38,12 +35,6 @@ public class PublicEventController {
 
         eventService.addHit(request.getRequestURI(), request.getRemoteAddr());
 
-        /*if (rangeStart != null && rangeEnd != null) {
-            return eventService.getEventsWithTimeRange(text, categories, paid, rangeStart,
-                    rangeEnd, onlyAvailable, sort, from, size);
-        } else {
-            return eventService.getEvents(text, categories, paid, onlyAvailable, sort, from, size);
-        }*/
         return eventService.getEventsWithTimeRange(text, categories, paid, rangeStart,
                 rangeEnd, onlyAvailable, sort, from, size);
     }

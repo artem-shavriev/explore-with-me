@@ -32,10 +32,6 @@ public class CompilationMapper {
         return compilationDto;
     }
 
-    public List<CompilationDto> mapToDto(List<Compilation> compilationsList) {
-        return compilationsList.stream().map(this::mapToDto).toList();
-    }
-
     public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {
         return Compilation.builder().events(newCompilationDto.getEvents())
                 .pinned(newCompilationDto.getPinned()).title(newCompilationDto.getTitle()).build();

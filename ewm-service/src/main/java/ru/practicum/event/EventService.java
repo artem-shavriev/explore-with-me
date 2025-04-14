@@ -23,14 +23,6 @@ public interface EventService {
                                                Integer from,
                                                Integer size);
 
-   /* List<EventShortDto> getEvents(String text,
-                                       List<Integer> categories,
-                                       Boolean paid,
-                                       Boolean onlyAvailable,
-                                       String sort,
-                                       Integer from,
-                                       Integer size);*/
-
     EventFullDto getEventById(Integer id);
 
     List<EventFullDto> getEventsByAdmin(List<Integer> users,

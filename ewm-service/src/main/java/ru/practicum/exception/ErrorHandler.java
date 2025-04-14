@@ -41,10 +41,10 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ApiError handleConflict(final ForbiddenException e) {
+    public ApiError handleForbidden(final ForbiddenException e) {
         return ApiError.builder().message(e.getMessage())
                 .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
-                .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(409).toString())
+                .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(403).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }
 

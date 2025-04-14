@@ -108,48 +108,6 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    /*@Override
-    @Transactional
-    public List<EventShortDto> getEvents(String text,
-                                         List<Integer> categories,
-                                         Boolean paid,
-                                         Boolean onlyAvailable,
-                                         String sort,
-                                         Integer from,
-                                         Integer size) {
-
-        Pageable eventPage = PageRequest.of(from, size);
-        String state = State.PUBLISHED.toString();
-        LocalDateTime now = LocalDateTime.now();
-
-        if (sort.equals("EVENT_DATE")) {
-            Page<Event> events;
-            if (onlyAvailable) {
-                events = eventRepository.getAvailableEventsSortByEventDate(state, text,
-                        categories, paid, now, eventPage);
-            } else {
-                events = eventRepository.getEventsSortEventByDate(state, text,
-                        categories, paid, now, eventPage);
-            }
-            log.info("Список событий получен. Сортеровка по дате.");
-            return events.stream().map(eventMapper::eventToShortDto).toList();
-
-        } else if (sort.equals("VIEWS")) {
-            Page<Event> events;
-            if (onlyAvailable) {
-                events = eventRepository.getAvailableEventsSortByViews(state, text,
-                        categories, paid, now, eventPage);
-            } else {
-                events = eventRepository.getEventsSortByViews(state, text,
-                        categories, paid, now, eventPage);
-            }
-            log.info("Список событий получен. Сортеровка по просмотрам.");
-            return events.stream().map(eventMapper::eventToShortDto).toList();
-        } else {
-            throw new NotFoundException("Неизвестный параметр sort");
-        }
-    }*/
-
     @Override
     @Transactional
     public EventFullDto getEventById(Integer id) {
@@ -201,7 +159,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId).orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
         if (event.getEventDate().isBefore(LocalDateTime.now().minusHours(1))) {
-            throw new ForbiddenException("Дата начала изменяемого события должна быть " +
+            throw new ConflictException("Дата начала изменяемого события должна быть " +
                     "не ранее чем за час от даты публикации.");
         }
 
@@ -210,13 +168,18 @@ public class EventServiceImpl implements EventService {
 
             if (stateAction.equals(StateAction.PUBLISH_EVENT.toString())
                     && event.getState().equals(State.PUBLISHED.toString())) {
-                throw new ForbiddenException("Cобытие можно публиковать, " +
+                throw new ConflictException("Cобытие можно публиковать, " +
                         "только если оно в состоянии ожидания публикации.");
             }
 
             if (stateAction.equals(StateAction.REJECT_EVENT.toString())
                     && event.getState().equals(State.PUBLISHED.toString())) {
-                throw new ForbiddenException("Cобытие можно отклонить, только если оно еще не опубликовано");
+                throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
+            }
+
+            if (stateAction.equals(StateAction.PUBLISH_EVENT.toString())
+                    && event.getState().equals(State.CANCELED.toString())) {
+                throw new ConflictException("Нельзя публиковать ранее отмененное событие.");
             }
 
             event.setState(stateActionToState(updateRequest.getStateAction()));
@@ -336,16 +299,16 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
         if (!event.getInitiator().equals(userId)) {
-            throw new ForbiddenException("Событие созданно другим пользователем. ");
+            throw new ConflictException("Событие созданно другим пользователем. ");
         }
 
         if (event.getEventDate().isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше," +
+            throw new ConflictException("Дата и время на которые намечено событие не может быть раньше," +
                     " чем через два часа от текущего момента");
         }
 
         if (event.getState().equals(State.PUBLISHED.toString())) {
-            throw new ForbiddenException("Изменить можно только отмененные события или " +
+            throw new ConflictException("Изменить можно только отмененные события или " +
                     "события в состоянии ожидания модерации ");
         }
 

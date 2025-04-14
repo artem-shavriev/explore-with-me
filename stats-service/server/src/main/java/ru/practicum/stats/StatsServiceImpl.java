@@ -1,19 +1,16 @@
 package ru.practicum.stats;
 
 import jakarta.transaction.Transactional;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.xml.sax.ErrorHandler;
 import ru.practicum.HitRepository;
 import ru.practicum.ViewStats;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -36,7 +33,7 @@ public class StatsServiceImpl implements StatsService {
             );
         }
 
-        if (unique == true) {
+        if (unique) {
             log.info("Получена статистика по уникальны ip запросам и списку url.");
             return repository.findUniqueStatsByUrisInPeriod(timeStart, timeEnd, uris);
 
@@ -60,7 +57,7 @@ public class StatsServiceImpl implements StatsService {
             );
         }
 
-        if (unique == true) {
+        if (unique) {
             log.info("Получена статистика по уникальным ip запросам и всем url.");
             return repository.findUniqueStatsInPeriod(timeStart, timeEnd);
 
