@@ -2,33 +2,31 @@ package ru.practicum.event.dto;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.category.dto.CategoryDto;
-import ru.practicum.location.Location;
+import ru.practicum.event.model.Location;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 @Builder
 public class UpdateEventAdminRequest {
-    @Min(20)
-    @Max(2000)
+    @Size(min = 20, max = 2000)
     private String annotation;
-    private CategoryDto category;
-    @Min(20)
-    @Max(7000)
+    private Integer category;
+    @Size(min = 20, max = 7000)
     private String description;
     private String eventDate;
     private Location location;
     private Boolean paid;
+    @Min(0)
     private Integer participantLimit;
     private Boolean requestModeration;
     private String stateAction;
-    @Min(3)
-    @Max(120)
+    @Size(min = 3, max = 120)
     private String title;
 
     public boolean hasAnnotation() {

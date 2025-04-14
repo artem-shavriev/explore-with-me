@@ -55,7 +55,7 @@ public class ParticipationService {
         ParticipationRequest participationRequest = ParticipationRequest.builder().requester(requesterId)
                 .event(eventId).created(LocalDateTime.now()).build();
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
-            participationRequest.setStatus(String.valueOf(Status.CONFIRMED.toString()));
+            participationRequest.setStatus(Status.CONFIRMED.toString());
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         } else {
@@ -75,7 +75,7 @@ public class ParticipationService {
             throw new ConflictException("Пользовтель не является владельцем запроса.");
         }
 
-        participationRequest.setStatus(Status.REJECTED.toString());
+        participationRequest.setStatus(Status.CANCELED.toString());
         participationRequest = participationRepository.save(participationRequest);
 
         return participationMapper.mapToDto(participationRequest);

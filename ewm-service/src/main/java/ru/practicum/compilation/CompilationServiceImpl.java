@@ -3,6 +3,7 @@ package ru.practicum.compilation;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class CompilationServiceImpl implements CompilationService {
-    private  final CompilationRepository compilationRepository;
+    private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
 
     @Override
@@ -27,10 +28,10 @@ public class CompilationServiceImpl implements CompilationService {
     public List<CompilationDto> getCompilations(Boolean pinned, Integer from, Integer size) {
         Pageable compilationPage = PageRequest.of(from, size);
 
-        List<Compilation> compilationsList = (compilationRepository.findAll(compilationPage).getContent());
+        Page<Compilation> compilationsPage = (compilationRepository.findAllByPinned(pinned, compilationPage));
 
         log.info("Найдены подборки событий");
-        return compilationMapper.mapToDto(compilationsList);
+        return compilationsPage.stream().map(compilationMapper::mapToDto).toList();
     }
 
     @Override
@@ -56,13 +57,13 @@ public class CompilationServiceImpl implements CompilationService {
 
     @Override
     @Transactional
-    public void deleteCompilation(@PathVariable Integer compId) {
-        Compilation compilation = compilationRepository
+    public void deleteCompilation(Integer compId) {
+        compilationRepository
                 .findById(compId)
                 .orElseThrow(() -> new NotFoundException("Удаляемая подборка не найдена по id"));
 
-        log.info("Удалена подборка событий.");
-        compilationRepository.delete(compilation);
+        compilationRepository.deleteById(compId);
+        log.info("Удалена подборка событий c id {}.", compId);
     }
 
     @Override

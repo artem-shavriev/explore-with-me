@@ -1,5 +1,6 @@
 package ru.practicum.event.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -21,9 +22,9 @@ public class AdminEventController {
     private final EventService eventService;
 
     @GetMapping
-    public List<EventFullDto> getEventsByAdmin(@RequestParam List<Integer> users,
-                                        @RequestParam List<String> states,
-                                        @RequestParam List<Integer> categories,
+    public List<EventFullDto> getEventsByAdmin(@RequestParam(required = false) List<Integer> users,
+                                        @RequestParam(required = false) List<String> states,
+                                        @RequestParam(required = false) List<Integer> categories,
                                         @RequestParam(required = false) String rangeStart,
                                         @RequestParam(required = false) String rangeEnd,
                                         @RequestParam(defaultValue = "0") Integer from,
@@ -34,7 +35,7 @@ public class AdminEventController {
 
     @PatchMapping("/{eventId}")
     public EventFullDto updateEventByAdmin(@PathVariable Integer eventId,
-                                           @RequestBody UpdateEventAdminRequest updateRequest) {
+                                           @Valid @RequestBody UpdateEventAdminRequest updateRequest) {
 
         return eventService.updateEventByAdmin(eventId, updateRequest);
     }

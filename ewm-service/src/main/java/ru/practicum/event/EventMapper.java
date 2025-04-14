@@ -8,7 +8,7 @@ import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
-import ru.practicum.location.Location;
+import ru.practicum.event.model.Location;
 import ru.practicum.user.UserMapper;
 import ru.practicum.user.UserService;
 import ru.practicum.user.dto.UserShortDto;
@@ -77,7 +77,11 @@ public class EventMapper {
 
         eventFullDto.setPaid(event.getPaid());
         eventFullDto.setParticipantLimit(event.getParticipantLimit());
-        eventFullDto.setPublishedOn(event.getPublishedOn().format(formatter));
+
+        if (event.getPublishedOn() != null) {
+            eventFullDto.setPublishedOn(event.getPublishedOn().format(formatter));
+        }
+
         eventFullDto.setRequestModeration(event.getRequestModeration());
         eventFullDto.setState(event.getState());
         eventFullDto.setTitle(event.getTitle());
@@ -91,7 +95,7 @@ public class EventMapper {
         LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
 
         event.setAnnotation(newEventDto.getAnnotation());
-        event.setCategory(newEventDto.getCategory().getId());
+        event.setCategory(newEventDto.getCategory());
         event.setDescription(newEventDto.getDescription());
         event.setEventDate(newEventDate);
 

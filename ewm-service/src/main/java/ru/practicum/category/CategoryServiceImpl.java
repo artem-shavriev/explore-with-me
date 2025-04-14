@@ -53,7 +53,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         category = categoryRepository.save(category);
 
-        log.info("Категория добавлена");
+        log.info("Категория id: {} добавлена", category.getId());
         return categoryMapper.mapToDto(category);
     }
 
@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена или недоступна."));
 
-        if (eventRepository.findAllByCategoryOrderByEventDateDesc(id).isEmpty()) {
+        if (!eventRepository.findAllByCategoryOrderByEventDateDesc(id).isEmpty()) {
             log.error("Существуют события, связанные с категорией {}", category.getName());
             throw  new ConflictException("Существуют события, связанные с категорией.");
         }
@@ -75,9 +75,6 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     @Transactional
     public CategoryDto updateCategory(Integer id, NewCategoryDto newCategoryDto) {
-        if (!categoryRepository.findAllByName(newCategoryDto.getName()).isEmpty()) {
-            throw new ConflictException("Категория с таким именем уже существует");
-        }
 
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена по id"));

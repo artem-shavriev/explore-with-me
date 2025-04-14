@@ -6,9 +6,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHit;
+import ru.practicum.ViewStats;
 import ru.practicum.client.HitClient;
+import ru.practicum.client.StatsClient;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
 import ru.practicum.event.dto.EventRequestStatusUpdateResult;
@@ -22,6 +25,7 @@ import ru.practicum.event.model.StateAction;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
+import ru.practicum.exception.ValidationException;
 import ru.practicum.participation.ParticipationService;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.participation.model.Status;
@@ -42,6 +46,7 @@ public class EventServiceImpl implements EventService {
     private final ParticipationService participationService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final HitClient hitClient;
+    private final StatsClient statsClient;
 
     @Override
     @Transactional
@@ -55,10 +60,25 @@ public class EventServiceImpl implements EventService {
                                                       Integer from,
                                                       Integer size) {
 
+        LocalDateTime start;
+        LocalDateTime end;
         Pageable eventPage = PageRequest.of(from, size);
         String state = State.PUBLISHED.toString();
-        LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
-        LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
+        if (rangeStart != null) {
+            start = LocalDateTime.parse(rangeStart, formatter);
+        } else {
+            start = LocalDateTime.now().minusYears(10);
+        }
+
+        if (rangeEnd != null) {
+            end = LocalDateTime.parse(rangeEnd, formatter);
+        } else {
+            end = LocalDateTime.now().plusYears(10);
+        }
+
+        if (start.isAfter(end)) {
+            throw new ValidationException("Дата начала не может быть после конца.");
+        }
 
         if (sort.equals("EVENT_DATE")) {
             Page<Event> events;
@@ -88,15 +108,15 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-    @Override
+    /*@Override
     @Transactional
-    public List<EventShortDto> getEventsRange(String text,
-                                              List<Integer> categories,
-                                              Boolean paid,
-                                              Boolean onlyAvailable,
-                                              String sort,
-                                              Integer from,
-                                              Integer size) {
+    public List<EventShortDto> getEvents(String text,
+                                         List<Integer> categories,
+                                         Boolean paid,
+                                         Boolean onlyAvailable,
+                                         String sort,
+                                         Integer from,
+                                         Integer size) {
 
         Pageable eventPage = PageRequest.of(from, size);
         String state = State.PUBLISHED.toString();
@@ -128,7 +148,7 @@ public class EventServiceImpl implements EventService {
         } else {
             throw new NotFoundException("Неизвестный параметр sort");
         }
-    }
+    }*/
 
     @Override
     @Transactional
@@ -136,12 +156,9 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
         if (!event.getState().equals(State.PUBLISHED.toString())) {
-            throw new ConflictException("Это событие еще не опубликовано.");
+            throw new NotFoundException("Это событие еще не опубликовано.");
         }
-
-        Integer addView = event.getViews() + 1;
-        event.setViews(addView);
-
+        log.info("Событие получено по id {}", id);
         return eventMapper.eventToFullDto(event);
     }
 
@@ -154,9 +171,22 @@ public class EventServiceImpl implements EventService {
                                                String rangeEnd,
                                                Integer from,
                                                Integer size) {
+
         Pageable eventPage = PageRequest.of(from, size);
-        LocalDateTime start = LocalDateTime.parse(rangeStart, formatter);
-        LocalDateTime end = LocalDateTime.parse(rangeEnd, formatter);
+        LocalDateTime start;
+        LocalDateTime end;
+
+        if (rangeStart != null) {
+            start = LocalDateTime.parse(rangeStart, formatter);
+        } else {
+            start = LocalDateTime.now().minusYears(10);
+        }
+
+        if (rangeEnd != null) {
+            end = LocalDateTime.parse(rangeEnd, formatter);
+        } else {
+            end = LocalDateTime.now().plusYears(10);
+        }
 
         Page<Event> events = eventRepository
                 .getEventsByAdminSortByViews(users, states, categories, start, end, eventPage);
@@ -197,7 +227,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateRequest.hasCategory()) {
-            event.setCategory(updateRequest.getCategory().getId());
+            event.setCategory(updateRequest.getCategory());
         }
 
         if (updateRequest.hasDescription()) {
@@ -206,6 +236,9 @@ public class EventServiceImpl implements EventService {
 
         if (updateRequest.hasEventDate()) {
             LocalDateTime newEventDate = LocalDateTime.parse(updateRequest.getEventDate(), formatter);
+            if (newEventDate.isBefore(LocalDateTime.now())) {
+                throw new ValidationException("Обновляемая дата события не должны быть наступившей.");
+            }
             event.setEventDate(newEventDate);
         }
 
@@ -262,14 +295,19 @@ public class EventServiceImpl implements EventService {
 
         LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
         if (newEventDate.isBefore(LocalDateTime.now().plusHours(2))) {
-            throw new ForbiddenException("Дата и время на которые намечено событие не может быть раньше, " +
+            throw new ValidationException("Дата и время на которые намечено событие не может быть раньше, " +
                     "чем через два часа от текущего момента");
         }
 
         Event event = eventMapper.newEventDtoToEvent(newEventDto);
         event.setCreatedOn(LocalDateTime.now());
+        event.setState(State.PENDING.toString());
+        event.setInitiator(userId);
+        event.setConfirmedRequests(0);
+        event.setViews(0L);
         event = eventRepository.save(event);
 
+        log.info("Событие с id {} добавлено пользователем с id {}", event.getId(), userId);
         return eventMapper.eventToFullDto(event);
     }
 
@@ -329,6 +367,9 @@ public class EventServiceImpl implements EventService {
 
         if (updateRequest.hasEventDate()) {
             LocalDateTime newEventDate = LocalDateTime.parse(updateRequest.getEventDate(), formatter);
+            if (newEventDate.isBefore(LocalDateTime.now())) {
+                throw new ValidationException("Обновляемая дата события не должны быть наступившей.");
+            }
             event.setEventDate(newEventDate);
         }
 
@@ -445,6 +486,36 @@ public class EventServiceImpl implements EventService {
         EndpointHit endpointHit = EndpointHit.builder().app("ewm-main-service").ip(ip)
                 .uri(uri).timestamp(timestamp).build();
         hitClient.addHit(endpointHit);
+    }
+
+    public Long getViews(String uri) {
+        LocalDateTime start = LocalDateTime.now().minusYears(5);
+        LocalDateTime end = LocalDateTime.now();
+        List<String> uris = List.of(uri);
+
+        try {
+            ResponseEntity<List<ViewStats>> response = statsClient
+                    .getStatsUri(start.format(formatter), end.format(formatter), true, uris);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && !response.getBody().isEmpty()) {
+                return response.getBody().getFirst().getHits();
+            } else {
+                return 0L;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void setViews(Integer eventId, String uri) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new NotFoundException("Событие не найдено."));
+
+        event.setViews(getViews(uri));
+        eventRepository.save(event);
+        log.info("Просмотры события обновлены.");
     }
 
     public String stateActionToState(String action) {

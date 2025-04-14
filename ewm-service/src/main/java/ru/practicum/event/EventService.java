@@ -23,13 +23,13 @@ public interface EventService {
                                                Integer from,
                                                Integer size);
 
-    List<EventShortDto> getEventsRange(String text,
+   /* List<EventShortDto> getEvents(String text,
                                        List<Integer> categories,
                                        Boolean paid,
                                        Boolean onlyAvailable,
                                        String sort,
                                        Integer from,
-                                       Integer size);
+                                       Integer size);*/
 
     EventFullDto getEventById(Integer id);
 
@@ -59,4 +59,6 @@ public interface EventService {
                                                         EventRequestStatusUpdateRequest statusUpdateRequest);
 
     void addHit(String uri, String ip);
+
+    void setViews(Integer eventId, String uri);
 }

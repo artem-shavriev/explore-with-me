@@ -14,8 +14,9 @@ import java.util.List;
 public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ApiError handleUnknownError(final Exception e) {
-        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+    public ApiError handleUnknownError(final UnknownException e) {
+        return ApiError.builder().message(e.getMessage())
+                .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(500).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }
@@ -23,7 +24,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ApiError handleNotFound(final NotFoundException e) {
-        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+        return ApiError.builder().message(e.getMessage())
+                .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(404).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }
@@ -31,7 +33,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ApiError handleConflict(final ConflictException e) {
-        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+        return ApiError.builder().message(e.getMessage())
+                .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(409).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }
@@ -39,7 +42,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ApiError handleConflict(final ForbiddenException e) {
-        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+        return ApiError.builder().message(e.getMessage())
+                .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(409).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }
@@ -47,7 +51,8 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ApiError handleValidationException(final ValidationException e) {
-        return ApiError.builder().message(e.getMessage()).reason(e.getCause().toString())
+        return ApiError.builder().message(e.getMessage())
+                .reason(e.getCause() != null ? e.getCause().getMessage() : e.getMessage())
                 .errors(List.of(Arrays.toString(e.getStackTrace()))).status(HttpStatusCode.valueOf(400).toString())
                 .timestamp(LocalDateTime.now().toString()).build();
     }

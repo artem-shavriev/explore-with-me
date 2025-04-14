@@ -3,16 +3,18 @@ package ru.practicum.client;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.DefaultUriBuilderFactory;
+import ru.practicum.ViewStats;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.joining;
@@ -31,12 +33,13 @@ public class StatsClient extends BaseClient {
         );
     }
 
-    public ResponseEntity<Object> getStatsUri(String start, String end,
-                                           Boolean unique, ArrayList<String> uris) throws Exception {
+    public ResponseEntity<List<ViewStats>> getStatsUri(String start, String end,
+                                                       Boolean unique, List<String> uris) throws Exception {
         String path = pathEncoderUri(start, end, unique, uris);
 
-        return get(path);
+        return getTyped(path, new ParameterizedTypeReference<>() {});
     }
+
 
     public ResponseEntity<Object> getStats(String start, String end,
                                               Boolean unique) throws Exception {
@@ -49,14 +52,14 @@ public class StatsClient extends BaseClient {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
     }
 
-    public String pathEncoderUri(String start, String end, Boolean unique, ArrayList<String> uris) throws Exception {
+    /*public String pathEncoderUri(String start, String end, Boolean unique, List<String> uris) throws Exception {
         Map<String, String> requestParams = new HashMap<>();
-        requestParams.put("start", "start");
-        requestParams.put("end", "end");
-        requestParams.put("unique", "unique");
+        requestParams.put("start", start);
+        requestParams.put("end", end);
+        requestParams.put("unique", unique.toString());
 
         for (String u: uris) {
-            requestParams.put("uris", "u");
+            requestParams.put("uris", u);
         }
 
         String encodedURL = requestParams.keySet().stream()
@@ -67,16 +70,37 @@ public class StatsClient extends BaseClient {
                         throw new RuntimeException(e);
                     }
                 })
-                .collect(joining("&", "http://www.baeldung.com?", ""));
+                .collect(joining("&", "http://localhost:9090/stats?", ""));
+               // .collect(joining("&", "http://stats-server:9090/stats?", ""));
+
+        return encodedURL;
+    }*/
+
+    public String pathEncoderUri(String start, String end, Boolean unique, List<String> uris) throws Exception {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", start);
+        requestParams.put("end", end);
+        requestParams.put("unique", unique.toString());
+
+        for (String u: uris) {
+            requestParams.put("uris", u);
+        }
+
+        String encodedURL = requestParams.keySet().stream()
+                .map(key -> {
+                        return key + "=" + requestParams.get(key);
+                })
+                .collect(joining("&", "http://localhost:9090/stats?", ""));
+        // .collect(joining("&", "http://stats-server:9090/stats?", ""));
 
         return encodedURL;
     }
 
-    public String pathEncoder(String start, String end, Boolean unique) throws Exception {
+    /*public String pathEncoder(String start, String end, Boolean unique) throws Exception {
         Map<String, String> requestParams = new HashMap<>();
-        requestParams.put("start", "start");
-        requestParams.put("end", "end");
-        requestParams.put("unique", "unique");
+        requestParams.put("start", start);
+        requestParams.put("end", end);
+        requestParams.put("unique", unique.toString());
 
         String encodedURL = requestParams.keySet().stream()
                 .map(key -> {
@@ -86,7 +110,24 @@ public class StatsClient extends BaseClient {
                         throw new RuntimeException(e);
                     }
                 })
-                .collect(joining("&", "http://www.baeldung.com?", ""));
+                .collect(joining("&", "http://localhost:9090/stats?", ""));
+        // .collect(joining("&", "http://stats-server:9090/stats?", ""));
+
+        return encodedURL;
+    }*/
+
+    public String pathEncoder(String start, String end, Boolean unique) throws Exception {
+        Map<String, String> requestParams = new HashMap<>();
+        requestParams.put("start", start);
+        requestParams.put("end", end);
+        requestParams.put("unique", unique.toString());
+
+        String encodedURL = requestParams.keySet().stream()
+                .map(key -> {
+                        return key + "=" + requestParams.get(key);
+                })
+                .collect(joining("&", "http://localhost:9090/stats?", ""));
+        // .collect(joining("&", "http://stats-server:9090/stats?", ""));
 
         return encodedURL;
     }
