@@ -38,6 +38,8 @@ public class StatsClient extends BaseClient {
     }
 
     public String pathEncoderUri(String start, String end, Boolean unique, List<String> uris) {
+        //String serverUrl = "http://localhost:9090/stats?";
+        String serverUrl = "http://stats-server:9090/stats?";
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("start", start);
         requestParams.put("end", end);
@@ -51,8 +53,7 @@ public class StatsClient extends BaseClient {
                 .map(key -> {
                         return key + "=" + requestParams.get(key);
                 })
-                //.collect(joining("&", "http://localhost:9090/stats?", ""));
-                .collect(joining("&", "http://stats-server:9090/stats?", ""));
+                .collect(joining("&", serverUrl, ""));
 
         return encodedURL;
     }
