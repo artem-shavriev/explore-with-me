@@ -4,12 +4,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.event.EventRepository;
-import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.event.dto.EventRequestStatusUpdateResult;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
 import ru.practicum.exception.ConflictException;
-import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.participation.model.ParticipationRequest;
@@ -17,7 +14,6 @@ import ru.practicum.participation.model.Status;
 import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -45,7 +41,7 @@ public class ParticipationService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("События в запросе не существует."));
 
-        if (event.getInitiator().equals(requesterId)) {
+        if (event.getInitiator().getId().equals(requesterId)) {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии.");
         }
 

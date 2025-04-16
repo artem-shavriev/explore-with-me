@@ -243,7 +243,7 @@ public class EventServiceImpl implements EventService {
 
         Pageable eventPage = PageRequest.of(from, size);
 
-        Page<Event> events = eventRepository.findAllByInitiator(userId, eventPage);
+        Page<Event> events = eventRepository.findAllByInitiatorId(userId, eventPage);
 
         Long views = getViews(uri);
 
@@ -286,7 +286,7 @@ public class EventServiceImpl implements EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
-        if (!event.getInitiator().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Событие созданно другим пользователем. ");
         }
 
@@ -303,7 +303,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ConflictException("Событие созданно другим пользователем. ");
         }
 
@@ -379,7 +379,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Событие созданно другим пользователем. ");
         }
 
@@ -394,7 +394,7 @@ public class EventServiceImpl implements EventService {
                 .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().equals(userId)) {
+        if (!event.getInitiator().getId().equals(userId)) {
             throw new ForbiddenException("Событие созданно другим пользователем. ");
         }
 

@@ -28,7 +28,7 @@ CREATE TABLE IF NOT EXISTS events (
   created_on TIMESTAMP,
   description VARCHAR(7000),
   event_date TIMESTAMP NOT NULL,
-  initiator INT NOT NULL,
+  initiator_id INT NOT NULL,
   event_location DOUBLE PRECISION[] NOT NULL,
   paid BOOLEAN NOT NULL,
   participant_limit INT NOT NULL,
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS events (
   title VARCHAR(120) NOT NULL,
   CONSTRAINT pk_events PRIMARY KEY (id),
   CONSTRAINT fk_events_to_category FOREIGN KEY(category_id) REFERENCES event_category(id),
-  CONSTRAINT fk_events_to_users FOREIGN KEY(initiator) REFERENCES users(id)
+  CONSTRAINT fk_events_to_users FOREIGN KEY(initiator_id) REFERENCES users(id)
 );
 
 CREATE TABLE IF NOT EXISTS compilation (

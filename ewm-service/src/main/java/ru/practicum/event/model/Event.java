@@ -54,7 +54,7 @@ public class Event {
     private LocalDateTime eventDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "initiator")
+    @JoinColumn(name = "initiator_id")
     private User initiator;
 
     @Column(name = "event_location", nullable = false)

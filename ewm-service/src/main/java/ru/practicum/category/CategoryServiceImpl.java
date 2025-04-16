@@ -63,7 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена или недоступна."));
 
-        if (!eventRepository.findAllByCategoryOrderByEventDateDesc(id).isEmpty()) {
+        if (!eventRepository.findAllByCategoryIdOrderByEventDateDesc(id).isEmpty()) {
             log.error("Существуют события, связанные с категорией {}", category.getName());
             throw  new ConflictException("Существуют события, связанные с категорией.");
         }

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.practicum.event.EventRepository;
+import ru.practicum.event.model.Event;
 import ru.practicum.exception.ConflictException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
@@ -22,6 +24,7 @@ import java.util.List;
 @Service
 public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
+    private final EventRepository eventRepository;
     private final UserMapper userMapper;
     private final ParticipationService participationService;
 
@@ -89,7 +92,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public ParticipationRequestDto addParticipation(Integer userId, Integer eventId) {
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь в запросе не существует."));
 
         return participationService.addParticipation(userId, eventId);

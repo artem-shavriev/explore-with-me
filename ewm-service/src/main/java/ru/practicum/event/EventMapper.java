@@ -2,15 +2,17 @@ package ru.practicum.event;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
-import ru.practicum.category.CategoryService;
+import ru.practicum.category.CategoryMapper;
+import ru.practicum.category.CategoryRepository;
 import ru.practicum.category.dto.CategoryDto;
+import ru.practicum.category.model.Category;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
+import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.UserMapper;
-import ru.practicum.user.UserService;
 import ru.practicum.user.dto.UserShortDto;
 
 import java.time.LocalDateTime;
@@ -21,9 +23,9 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class EventMapper {
-    private final CategoryService categoryService;
-    private final UserService userService;
     private final UserMapper userMapper;
+    private  final CategoryMapper categoryMapper;
+    private  final CategoryRepository categoryRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public EventShortDto eventToShortDto(Event event, Long views) {
@@ -31,17 +33,16 @@ public class EventMapper {
 
         eventShortDto.setId(event.getId());
         eventShortDto.setAnnotation(event.getAnnotation());
-       // свять в эвент для категорий многие ко многим?
-        CategoryDto category = categoryService.getByIdCategory(event.getCategory());
-        eventShortDto.setCategory(category);
 
+        CategoryDto category = categoryMapper.mapToDto(event.getCategory());
+        eventShortDto.setCategory(category);
 
         eventShortDto.setConfirmedRequests(event.getConfirmedRequests());
 
         String eventDated = event.getEventDate().format(formatter);
         eventShortDto.setEventDate(eventDated);
-        // свять в эвент для initiator один ко многим?
-        UserShortDto user = userMapper.dtoToShortDto(userService.getUserById(event.getInitiator()));
+
+        UserShortDto user = userMapper.dtoToShortDto(userMapper.mapToDto(event.getInitiator()));
         eventShortDto.setInitiator(user);
 
         eventShortDto.setPaid(event.getPaid());
@@ -57,7 +58,7 @@ public class EventMapper {
         eventFullDto.setId(event.getId());
         eventFullDto.setAnnotation(event.getAnnotation());
 
-        CategoryDto category = categoryService.getByIdCategory(event.getCategory());
+        CategoryDto category = categoryMapper.mapToDto(event.getCategory());
         eventFullDto.setCategory(category);
 
         eventFullDto.setConfirmedRequests(event.getConfirmedRequests());
@@ -65,7 +66,7 @@ public class EventMapper {
         eventFullDto.setDescription(event.getDescription());
         eventFullDto.setEventDate(event.getEventDate().format(formatter));
 
-        UserShortDto user = userMapper.dtoToShortDto(userService.getUserById(event.getInitiator()));
+        UserShortDto user = userMapper.dtoToShortDto(userMapper.mapToDto(event.getInitiator()));
         eventFullDto.setInitiator(user);
 
         Location location = Location.builder().lat(event.getLocation().get(0)).lon(event.getLocation().get(1)).build();
@@ -91,7 +92,11 @@ public class EventMapper {
         LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
 
         event.setAnnotation(newEventDto.getAnnotation());
-        event.setCategory(newEventDto.getCategory());
+
+        Category category = categoryRepository.findById(newEventDto.getCategory())
+                .orElseThrow(() -> new NotFoundException("Такой категории нет."));
+        event.setCategory(category);
+
         event.setDescription(newEventDto.getDescription());
         event.setEventDate(newEventDate);
 
