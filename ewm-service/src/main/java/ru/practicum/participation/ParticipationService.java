@@ -11,6 +11,8 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.participation.model.ParticipationRequest;
 import ru.practicum.participation.model.Status;
+import ru.practicum.user.UserRepository;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,6 +24,7 @@ public class ParticipationService {
     private final ParticipationRequestRepository participationRepository;
     private final ParticipationMapper participationMapper;
     private final EventRepository eventRepository;
+    private final UserRepository userRepository;
 
     public List<ParticipationRequestDto> getParticipationByRequester(Integer requesterId) {
         return participationMapper.mapToDto(participationRepository.findAllByRequester(requesterId));
@@ -35,6 +38,9 @@ public class ParticipationService {
         if (!participationRepository.findAllByRequesterAndEvent(requesterId, eventId).isEmpty()) {
             throw new ConflictException("Такой запрос уже существует.");
         }
+
+        User requester = userRepository.findById(requesterId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не наден."));
 
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("События в запросе не существует."));
@@ -52,14 +58,14 @@ public class ParticipationService {
         }
 
 
-        ParticipationRequest participationRequest = ParticipationRequest.builder().requester(requesterId)
-                .event(eventId).created(LocalDateTime.now()).build();
+        ParticipationRequest participationRequest = ParticipationRequest.builder().requester(requester)
+                .event(event).created(LocalDateTime.now()).build();
         if (!event.getRequestModeration() || event.getParticipantLimit().equals(0)) {
-            participationRequest.setStatus(Status.CONFIRMED.toString());
+            participationRequest.setStatus(Status.CONFIRMED);
             event.setConfirmedRequests(event.getConfirmedRequests() + 1);
             eventRepository.save(event);
         } else {
-            participationRequest.setStatus(Status.PENDING.toString());
+            participationRequest.setStatus(Status.PENDING);
         }
 
         participationRequest = participationRepository.save(participationRequest);
@@ -71,15 +77,15 @@ public class ParticipationService {
         ParticipationRequest participationRequest = participationRepository.findById(requestId)
                 .orElseThrow(() -> new NotFoundException("Отменяемый запрос не найден."));
 
-        if (!participationRequest.getRequester().equals(requesterId)) {
+        if (!participationRequest.getRequester().getId().equals(requesterId)) {
             throw new ConflictException("Пользовтель не является владельцем запроса.");
         }
 
-        if (participationRequest.getStatus().equals(Status.CONFIRMED.toString())) {
+        if (participationRequest.getStatus().equals(Status.CONFIRMED)) {
             throw new ConflictException("Нельзя отменить уже принятую заявку.");
         }
 
-        participationRequest.setStatus(Status.CANCELED.toString());
+        participationRequest.setStatus(Status.CANCELED);
         participationRequest = participationRepository.save(participationRequest);
 
         return participationMapper.mapToDto(participationRequest);
@@ -88,75 +94,4 @@ public class ParticipationService {
     public List<ParticipationRequestDto> findParticipationsByIdList(List<Integer> idList) {
         return participationMapper.mapToDto(participationRepository.findParticipationsByIdList(idList));
     }
-
-    /*public List<ParticipationRequestDto> getParticipationRequests(Integer userId, Integer eventId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().equals(userId)) {
-            throw new ForbiddenException("Событие созданно другим пользователем. ");
-        }
-
-        return getParticipationByEvent(eventId);
-    }
-
-    public EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
-                                                               EventRequestStatusUpdateRequest statusUpdateRequest) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().equals(userId)) {
-            throw new ForbiddenException("Событие созданно другим пользователем. ");
-        }
-
-        EventRequestStatusUpdateResult eventRequestStatusUpdateResult = new EventRequestStatusUpdateResult();
-        List<ParticipationRequestDto> confirmedParticipationRequests = new ArrayList<>();
-        List<ParticipationRequestDto> rejectedParticipationRequests = new ArrayList<>();
-
-        if (event.getRequestModeration().equals(false) || event.getParticipantLimit().equals(0)) {
-            confirmedParticipationRequests = getParticipationRequests(userId, eventId);
-            eventRequestStatusUpdateResult.setConfirmedRequests(confirmedParticipationRequests);
-            return eventRequestStatusUpdateResult;
-        }
-
-        if (event.getConfirmedRequests() >= event.getParticipantLimit()) {
-            throw new ConflictException("Достигнут лимит одобренных заявок");
-        }
-
-        List<ParticipationRequestDto> participationRequestsDtoList = findParticipationsByIdList(statusUpdateRequest
-                .getRequestIds());
-
-        String updateStatus = statusUpdateRequest.getStatus();
-
-        if (updateStatus.equals(Status.CONFIRMED.toString())) {
-            for (ParticipationRequestDto request : participationRequestsDtoList) {
-                if (event.getConfirmedRequests() < event.getParticipantLimit()) {
-                    if (request.getStatus().equals(Status.PENDING.toString())) {
-                        request.setStatus(updateStatus);
-                        event.setConfirmedRequests(event.getConfirmedRequests() + 1);
-                        confirmedParticipationRequests.add(request);
-                    }
-                } else {
-                    if (request.getStatus().equals(Status.PENDING.toString())) {
-                        request.setStatus(Status.REJECTED.toString());
-                        rejectedParticipationRequests.add(request);
-                    }
-                }
-            }
-        } else if (updateStatus.equals(Status.REJECTED.toString())) {
-            for (ParticipationRequestDto request : participationRequestsDtoList) {
-                if (request.getStatus().equals(Status.PENDING.toString())) {
-                    request.setStatus(updateStatus);
-                    rejectedParticipationRequests.add(request);
-                }
-            }
-        }
-
-        eventRequestStatusUpdateResult.setConfirmedRequests(confirmedParticipationRequests);
-        eventRequestStatusUpdateResult.setRejectedRequests(rejectedParticipationRequests);
-
-        return eventRequestStatusUpdateResult;
-    }*/
 }

@@ -11,10 +11,8 @@ import java.util.List;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    @Query("SELECT u " +
-            "FROM User u " +
-            "WHERE (:ids IS NULL OR u.id IN :ids)")
-    List<User> findUsersByIdsList(Pageable usersPage, @Param("ids") List<Integer> ids);
+
+    List<User> findUsersByIdIn(Pageable usersPage, List<Integer> ids);
 
     List<User> findAllByEmail(String email);
 }

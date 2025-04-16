@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService {
         if (ids == null || ids.isEmpty()) {
             users = (userRepository.findAll(usersPage).getContent());
         } else {
-            users = (userRepository.findUsersByIdsList(usersPage, ids));
+            users = (userRepository.findUsersByIdIn(usersPage, ids));
         }
         log.info("Пользователи получены.");
         return userMapper.mapToDto(users);

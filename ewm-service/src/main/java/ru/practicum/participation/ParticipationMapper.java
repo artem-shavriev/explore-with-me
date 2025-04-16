@@ -13,10 +13,10 @@ public class ParticipationMapper {
 
     public ParticipationRequestDto mapToDto(ParticipationRequest participationRequest) {
         return ParticipationRequestDto.builder()
-                .id(participationRequest.getId()).event(participationRequest.getEvent())
-                .requester(participationRequest.getRequester())
+                .id(participationRequest.getId()).event(participationRequest.getEvent().getId())
+                .requester(participationRequest.getRequester().getId())
                 .created(participationRequest.getCreated().format(formatter))
-                .status(participationRequest.getStatus()).build();
+                .status(participationRequest.getStatus().toString()).build();
     }
 
     public List<ParticipationRequestDto> mapToDto(List<ParticipationRequest> participationRequests) {
