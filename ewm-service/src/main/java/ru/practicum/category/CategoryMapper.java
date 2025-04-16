@@ -16,6 +16,10 @@ public class CategoryMapper {
                 .name(category.getName()).build();
     }
 
+    public Category dtoToMap(CategoryDto categoryDto) {
+        return Category.builder().id(categoryDto.getId()).name(categoryDto.getName()).build();
+    }
+
     public List<CategoryDto> mapToDto(List<Category> categories) {
         return categories.stream().map(this::mapToDto).toList();
     }

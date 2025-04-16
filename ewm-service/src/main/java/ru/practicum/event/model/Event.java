@@ -2,9 +2,12 @@ package ru.practicum.event.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +15,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import ru.practicum.category.model.Category;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,8 +37,9 @@ public class Event {
     @Column(name = "annotation", nullable = false)
     private String annotation;
 
-    @Column(name = "category_id", nullable = false)
-    private Integer category;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(name = "confirmed_requests")
     private Integer confirmedRequests;
@@ -47,8 +53,9 @@ public class Event {
     @Column(name = "event_date", nullable = false)
     private LocalDateTime eventDate;
 
-    @Column(name = "initiator", nullable = false)
-    private Integer initiator;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "initiator")
+    private User initiator;
 
     @Column(name = "event_location", nullable = false)
     private List<Double> location;

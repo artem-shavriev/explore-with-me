@@ -20,6 +20,7 @@ import ru.practicum.event.dto.EventRequestStatusUpdateResult;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.participation.ParticipationService;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -29,6 +30,7 @@ import java.util.List;
 @RequestMapping("/users/{userId}/events")
 public class PrivateEventController {
     private final EventService eventService;
+    private final ParticipationService participationService;
 
     @GetMapping
     public List<EventShortDto> getEventsByUser(@PathVariable Integer userId,
@@ -62,6 +64,7 @@ public class PrivateEventController {
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getParticipationRequests(@PathVariable Integer userId,
                                                                   @PathVariable Integer eventId) {
+        //return participationService.getParticipationRequests(userId, eventId);
         return eventService.getParticipationRequests(userId, eventId);
     }
 
@@ -69,6 +72,7 @@ public class PrivateEventController {
     public EventRequestStatusUpdateResult updateRequestsStatus(@PathVariable Integer userId,
                                                                @PathVariable Integer eventId,
                                                                @Valid @RequestBody EventRequestStatusUpdateRequest statusUpdateRequest) {
+        //return participationService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
         return eventService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
     }
 }

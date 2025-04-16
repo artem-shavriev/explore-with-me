@@ -33,16 +33,13 @@ public class PublicEventController {
                                          @RequestParam(defaultValue = "10") Integer size,
                                          HttpServletRequest request) {
 
-        eventService.addHit(request.getRequestURI(), request.getRemoteAddr());
-
         return eventService.getEventsWithTimeRange(text, categories, paid, rangeStart,
-                rangeEnd, onlyAvailable, sort, from, size);
+                rangeEnd, onlyAvailable, sort, from, size, request.getRequestURI(), request.getRemoteAddr());
     }
 
     @GetMapping("/{id}")
     public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
-        eventService.addHit(request.getRequestURI(), request.getRemoteAddr());
 
-        return eventService.getEventById(id);
+        return eventService.getEventById(id, request.getRequestURI(), request.getRemoteAddr());
     }
 }

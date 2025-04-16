@@ -10,6 +10,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHit;
 import ru.practicum.ViewStats;
+import ru.practicum.category.CategoryMapper;
+import ru.practicum.category.CategoryRepository;
+import ru.practicum.category.model.Category;
 import ru.practicum.client.HitClient;
 import ru.practicum.client.StatsClient;
 import ru.practicum.event.dto.EventFullDto;
@@ -30,6 +33,7 @@ import ru.practicum.participation.ParticipationService;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.participation.model.Status;
 import ru.practicum.user.UserRepository;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -42,7 +46,9 @@ import java.util.List;
 public class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
+    private final CategoryMapper categoryMapper;
     private final ParticipationService participationService;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final HitClient hitClient;
@@ -58,7 +64,9 @@ public class EventServiceImpl implements EventService {
                                                       Boolean onlyAvailable,
                                                       String sort,
                                                       Integer from,
-                                                      Integer size) {
+                                                      Integer size,
+                                                      String uri,
+                                                      String ip) {
 
         LocalDateTime start;
         LocalDateTime end;
@@ -80,27 +88,31 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException("Дата начала не может быть после конца.");
         }
 
-            Page<Event> events;
-            if (onlyAvailable) {
-                events = eventRepository.getAvailableEventsWithTimeRangeSortEventDate(state, text,
-                        categories, paid, start, end, eventPage);
-            } else {
-                events = eventRepository.getEventsWithTimeRangeSortEventDate(state, text,
-                        categories, paid, start, end, eventPage);
-            }
-            log.info("Список событий получен. Выборка по веремни. Сортеровка по дате.");
+        Page<Event> events;
+        if (onlyAvailable) {
+            events = eventRepository.getAvailableEventsWithTimeRangeSortEventDate(state, text,
+                    categories, paid, start, end, eventPage);
+        } else {
+            events = eventRepository.getEventsWithTimeRangeSortEventDate(state, text,
+                    categories, paid, start, end, eventPage);
+        }
+        log.info("Список событий получен. Выборка по веремни. Сортеровка по дате.");
 
-            return setViewsForShortDto(events.getContent());
+        addHit(uri, ip);
+        return setViewsForShortDto(events.getContent());
     }
 
     @Override
     @Transactional
-    public EventFullDto getEventById(Integer id) {
+    public EventFullDto getEventById(Integer id, String uri, String ip) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
         if (!event.getState().equals(State.PUBLISHED.toString())) {
             throw new NotFoundException("Это событие еще не опубликовано.");
         }
+
+        addHit(uri, ip);
+
         log.info("Событие получено по id {}", id);
         return setViewsForFullDto(event);
     }
@@ -175,7 +187,9 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateRequest.hasCategory()) {
-            event.setCategory(updateRequest.getCategory());
+            Category category = categoryRepository.findById(updateRequest.getCategory())
+                    .orElseThrow(() -> new NotFoundException("Категории с данным id {} не существует."));
+            event.setCategory(category);
         }
 
         if (updateRequest.hasDescription()) {
@@ -252,7 +266,11 @@ public class EventServiceImpl implements EventService {
         Event event = eventMapper.newEventDtoToEvent(newEventDto);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(State.PENDING.toString());
-        event.setInitiator(userId);
+
+        User initiator = userRepository.findById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
+
+        event.setInitiator(initiator);
         event.setConfirmedRequests(0);
         event = eventRepository.save(event);
 
@@ -308,7 +326,7 @@ public class EventServiceImpl implements EventService {
         }
 
         if (updateRequest.hasCategory()) {
-            event.setCategory(updateRequest.getCategory().getId());
+            event.setCategory(categoryMapper.dtoToMap(updateRequest.getCategory()));
         }
 
         if (updateRequest.hasDescription()) {
@@ -429,9 +447,7 @@ public class EventServiceImpl implements EventService {
         return eventRequestStatusUpdateResult;
     }
 
-    @Override
-    @Transactional
-    public void addHit(String uri, String ip) {
+    private void addHit(String uri, String ip) {
         String timestamp = LocalDateTime.now().format(formatter);
         EndpointHit endpointHit = EndpointHit.builder().app("ewm-main-service").ip(ip)
                 .uri(uri).timestamp(timestamp).build();

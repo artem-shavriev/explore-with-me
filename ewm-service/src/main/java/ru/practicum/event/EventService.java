@@ -22,9 +22,11 @@ public interface EventService {
                                                String rangeEnd, Boolean onlyAvailable,
                                                String sort,
                                                Integer from,
-                                               Integer size);
+                                               Integer size,
+                                               String uri,
+                                               String ip);
 
-    EventFullDto getEventById(Integer id);
+    EventFullDto getEventById(Integer id, String uri, String ip);
 
     List<EventFullDto> getEventsByAdmin(List<Integer> users,
                                  List<String> states,
@@ -49,9 +51,7 @@ public interface EventService {
     List<ParticipationRequestDto> getParticipationRequests(Integer userId, Integer eventId);
 
     EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
-                                                        EventRequestStatusUpdateRequest statusUpdateRequest);
-
-    void addHit(String uri, String ip);
+                                                      EventRequestStatusUpdateRequest statusUpdateRequest);
 
     List<EventShortDto> setViewsForShortDto(List<Event> events);
 }
