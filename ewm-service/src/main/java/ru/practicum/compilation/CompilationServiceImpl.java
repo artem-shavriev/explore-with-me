@@ -12,6 +12,7 @@ import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.EventRepository;
+import ru.practicum.event.EventService;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.NotFoundException;
 
@@ -24,6 +25,7 @@ public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
     private final EventRepository eventRepository;
+    private final EventService eventService;
 
     @Override
     @Transactional

@@ -3,7 +3,6 @@ package ru.practicum.event;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import ru.practicum.category.CategoryMapper;
-import ru.practicum.category.CategoryRepository;
 import ru.practicum.category.dto.CategoryDto;
 import ru.practicum.category.model.Category;
 import ru.practicum.event.dto.EventFullDto;
@@ -11,7 +10,6 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.Location;
-import ru.practicum.exception.NotFoundException;
 import ru.practicum.user.UserMapper;
 import ru.practicum.user.dto.UserShortDto;
 
@@ -25,7 +23,6 @@ import java.util.List;
 public class EventMapper {
     private final UserMapper userMapper;
     private  final CategoryMapper categoryMapper;
-    private  final CategoryRepository categoryRepository;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public EventShortDto eventToShortDto(Event event, Long views) {
@@ -87,14 +84,12 @@ public class EventMapper {
         return eventFullDto;
     }
 
-    public Event newEventDtoToEvent(NewEventDto newEventDto) {
+    public Event newEventDtoToEvent(NewEventDto newEventDto, Category category) {
         Event event = new Event();
         LocalDateTime newEventDate = LocalDateTime.parse(newEventDto.getEventDate(), formatter);
 
         event.setAnnotation(newEventDto.getAnnotation());
 
-        Category category = categoryRepository.findById(newEventDto.getCategory())
-                .orElseThrow(() -> new NotFoundException("Такой категории нет."));
         event.setCategory(category);
 
         event.setDescription(newEventDto.getDescription());

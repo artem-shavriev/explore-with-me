@@ -64,15 +64,15 @@ public class PrivateEventController {
     @GetMapping("/{eventId}/requests")
     public List<ParticipationRequestDto> getParticipationRequests(@PathVariable Integer userId,
                                                                   @PathVariable Integer eventId) {
-        //return participationService.getParticipationRequests(userId, eventId);
-        return eventService.getParticipationRequests(userId, eventId);
+
+        return participationService.getParticipationRequests(userId, eventId);
     }
 
     @PatchMapping("/{eventId}/requests")
     public EventRequestStatusUpdateResult updateRequestsStatus(@PathVariable Integer userId,
                                                                @PathVariable Integer eventId,
                                                                @Valid @RequestBody EventRequestStatusUpdateRequest statusUpdateRequest) {
-        //return participationService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
-        return eventService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
+
+        return participationService.updateRequestsStatus(userId, eventId, statusUpdateRequest);
     }
 }

@@ -28,8 +28,5 @@ public interface ParticipationRequestRepository extends JpaRepository<Participat
             "WHERE p.event.id = :eventId")
     List<ParticipationRequest> findAllByEvent(@Param("eventId") Integer eventId);
 
-    @Query("SELECT p " +
-            "FROM ParticipationRequest p " +
-            "WHERE p.id IN :list")
-    List<ParticipationRequest> findParticipationsByIdList(@Param("list") List<Integer> list);
+    List<ParticipationRequest> findParticipationByIdIn(List<Integer> list);
 }

@@ -16,8 +16,6 @@ import ru.practicum.category.model.Category;
 import ru.practicum.client.HitClient;
 import ru.practicum.client.StatsClient;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.event.dto.EventRequestStatusUpdateResult;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
@@ -30,8 +28,6 @@ import ru.practicum.exception.ForbiddenException;
 import ru.practicum.exception.NotFoundException;
 import ru.practicum.exception.ValidationException;
 import ru.practicum.participation.ParticipationService;
-import ru.practicum.participation.dto.ParticipationRequestDto;
-import ru.practicum.participation.model.Status;
 import ru.practicum.user.UserRepository;
 import ru.practicum.user.model.User;
 
@@ -49,10 +45,9 @@ public class EventServiceImpl implements EventService {
     private final CategoryRepository categoryRepository;
     private final EventMapper eventMapper;
     private final CategoryMapper categoryMapper;
-    private final ParticipationService participationService;
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private final HitClient hitClient;
     private final StatsClient statsClient;
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     @Override
     @Transactional
@@ -263,7 +258,10 @@ public class EventServiceImpl implements EventService {
                     "чем через два часа от текущего момента");
         }
 
-        Event event = eventMapper.newEventDtoToEvent(newEventDto);
+        Category category = categoryRepository.findById(newEventDto.getCategory())
+                .orElseThrow(() -> new NotFoundException("Такой категории нет."));
+
+        Event event = eventMapper.newEventDtoToEvent(newEventDto, category);
         event.setCreatedOn(LocalDateTime.now());
         event.setState(State.PENDING);
 
@@ -372,21 +370,7 @@ public class EventServiceImpl implements EventService {
         return setViewsForFullDto(event);
     }
 
-    @Override
-    @Transactional
-    public List<ParticipationRequestDto> getParticipationRequests(Integer userId, Integer eventId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено."));
-        if (!event.getInitiator().getId().equals(userId)) {
-            throw new ForbiddenException("Событие созданно другим пользователем. ");
-        }
-
-        return participationService.getParticipationByEvent(eventId);
-    }
-
-    @Override
+   /* @Override
     @Transactional
     public EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
                                                                EventRequestStatusUpdateRequest statusUpdateRequest) {
@@ -403,7 +387,7 @@ public class EventServiceImpl implements EventService {
         List<ParticipationRequestDto> rejectedParticipationRequests = new ArrayList<>();
 
         if (event.getRequestModeration().equals(false) || event.getParticipantLimit().equals(0)) {
-            confirmedParticipationRequests = getParticipationRequests(userId, eventId);
+            confirmedParticipationRequests = participationService.getParticipationRequests(userId, eventId);
             eventRequestStatusUpdateResult.setConfirmedRequests(confirmedParticipationRequests);
             return eventRequestStatusUpdateResult;
         }
@@ -445,7 +429,7 @@ public class EventServiceImpl implements EventService {
         eventRequestStatusUpdateResult.setRejectedRequests(rejectedParticipationRequests);
 
         return eventRequestStatusUpdateResult;
-    }
+    }*/
 
     private void addHit(String uri, String ip) {
         String timestamp = LocalDateTime.now().format(formatter);

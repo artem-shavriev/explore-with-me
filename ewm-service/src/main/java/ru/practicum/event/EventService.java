@@ -2,15 +2,12 @@ package ru.practicum.event;
 
 import org.springframework.stereotype.Service;
 import ru.practicum.event.dto.EventFullDto;
-import ru.practicum.event.dto.EventRequestStatusUpdateRequest;
-import ru.practicum.event.dto.EventRequestStatusUpdateResult;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
 import ru.practicum.event.model.State;
-import ru.practicum.participation.dto.ParticipationRequestDto;
 
 import java.util.List;
 
@@ -49,10 +46,8 @@ public interface EventService {
                                    Integer eventId,
                                    UpdateEventUserRequest updateEventUserRequest);
 
-    List<ParticipationRequestDto> getParticipationRequests(Integer userId, Integer eventId);
-
-    EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
-                                                      EventRequestStatusUpdateRequest statusUpdateRequest);
+    //EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
+                                                      //EventRequestStatusUpdateRequest statusUpdateRequest);
 
     List<EventShortDto> setViewsForShortDto(List<Event> events);
 }
