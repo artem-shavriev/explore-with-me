@@ -46,8 +46,5 @@ public interface EventService {
                                    Integer eventId,
                                    UpdateEventUserRequest updateEventUserRequest);
 
-    //EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,
-                                                      //EventRequestStatusUpdateRequest statusUpdateRequest);
-
     List<EventShortDto> setViewsForShortDto(List<Event> events);
 }
