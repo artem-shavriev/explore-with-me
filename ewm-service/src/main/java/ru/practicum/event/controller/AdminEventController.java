@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
+import ru.practicum.event.model.State;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class AdminEventController {
 
     @GetMapping
     public List<EventFullDto> getEventsByAdmin(@RequestParam(required = false) List<Integer> users,
-                                        @RequestParam(required = false) List<String> states,
+                                        @RequestParam(required = false) List<State> states,
                                         @RequestParam(required = false) List<Integer> categories,
                                         @RequestParam(required = false) String rangeStart,
                                         @RequestParam(required = false) String rangeEnd,

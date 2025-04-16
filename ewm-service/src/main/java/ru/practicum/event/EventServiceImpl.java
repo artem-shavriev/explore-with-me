@@ -71,7 +71,7 @@ public class EventServiceImpl implements EventService {
         LocalDateTime start;
         LocalDateTime end;
         Pageable eventPage = PageRequest.of(from, size);
-        String state = State.PUBLISHED.toString();
+        State state = State.PUBLISHED;
         if (rangeStart != null) {
             start = LocalDateTime.parse(rangeStart, formatter);
         } else {
@@ -107,7 +107,7 @@ public class EventServiceImpl implements EventService {
     public EventFullDto getEventById(Integer id, String uri, String ip) {
         Event event = eventRepository.findById(id).orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
-        if (!event.getState().equals(State.PUBLISHED.toString())) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new NotFoundException("Это событие еще не опубликовано.");
         }
 
@@ -120,7 +120,7 @@ public class EventServiceImpl implements EventService {
     @Override
     @Transactional
     public List<EventFullDto> getEventsByAdmin(List<Integer> users,
-                                               List<String> states,
+                                               List<State> states,
                                                List<Integer> categories,
                                                String rangeStart,
                                                String rangeEnd,
@@ -164,18 +164,18 @@ public class EventServiceImpl implements EventService {
             String stateAction = updateRequest.getStateAction();
 
             if (stateAction.equals(StateAction.PUBLISH_EVENT.toString())
-                    && event.getState().equals(State.PUBLISHED.toString())) {
+                    && event.getState().equals(State.PUBLISHED)) {
                 throw new ConflictException("Cобытие можно публиковать, " +
                         "только если оно в состоянии ожидания публикации.");
             }
 
             if (stateAction.equals(StateAction.REJECT_EVENT.toString())
-                    && event.getState().equals(State.PUBLISHED.toString())) {
+                    && event.getState().equals(State.PUBLISHED)) {
                 throw new ConflictException("Cобытие можно отклонить, только если оно еще не опубликовано");
             }
 
             if (stateAction.equals(StateAction.PUBLISH_EVENT.toString())
-                    && event.getState().equals(State.CANCELED.toString())) {
+                    && event.getState().equals(State.CANCELED)) {
                 throw new ConflictException("Нельзя публиковать ранее отмененное событие.");
             }
 
@@ -265,7 +265,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = eventMapper.newEventDtoToEvent(newEventDto);
         event.setCreatedOn(LocalDateTime.now());
-        event.setState(State.PENDING.toString());
+        event.setState(State.PENDING);
 
         User initiator = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
@@ -312,7 +312,7 @@ public class EventServiceImpl implements EventService {
                     " чем через два часа от текущего момента");
         }
 
-        if (event.getState().equals(State.PUBLISHED.toString())) {
+        if (event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Изменить можно только отмененные события или " +
                     "события в состоянии ожидания модерации ");
         }
@@ -510,15 +510,15 @@ public class EventServiceImpl implements EventService {
         return eventMapper.eventToFullDto(event, views);
     }
 
-    public String stateActionToState(String action) {
+    public State stateActionToState(String action) {
         if (action.equals(StateAction.PUBLISH_EVENT.toString())) {
-            return State.PUBLISHED.toString();
+            return State.PUBLISHED;
         } else if (action.equals(StateAction.REJECT_EVENT.toString())) {
-            return State.CANCELED.toString();
+            return State.CANCELED;
         } else if (action.equals(StateAction.CANCEL_REVIEW.toString())) {
-            return State.CANCELED.toString();
+            return State.CANCELED;
         } else if (action.equals(StateAction.SEND_TO_REVIEW.toString())) {
-            return State.PENDING.toString();
+            return State.PENDING;
         } else {
             throw new NotFoundException("Неизвестное состояние StateAction");
         }

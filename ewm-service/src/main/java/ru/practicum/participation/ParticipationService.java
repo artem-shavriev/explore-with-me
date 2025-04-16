@@ -11,7 +11,6 @@ import ru.practicum.exception.NotFoundException;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 import ru.practicum.participation.model.ParticipationRequest;
 import ru.practicum.participation.model.Status;
-import ru.practicum.user.UserRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +22,6 @@ public class ParticipationService {
     private final ParticipationRequestRepository participationRepository;
     private final ParticipationMapper participationMapper;
     private final EventRepository eventRepository;
-    private final UserRepository userRepository;
 
     public List<ParticipationRequestDto> getParticipationByRequester(Integer requesterId) {
         return participationMapper.mapToDto(participationRepository.findAllByRequester(requesterId));
@@ -45,7 +43,7 @@ public class ParticipationService {
             throw new ConflictException("Инициатор события не может добавить запрос на участие в своём событии.");
         }
 
-        if (!event.getState().equals(State.PUBLISHED.toString())) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new ConflictException("Нельзя участвовать в неопубликованном событии.");
         }
 

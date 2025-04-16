@@ -9,6 +9,7 @@ import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -29,7 +30,7 @@ public interface EventService {
     EventFullDto getEventById(Integer id, String uri, String ip);
 
     List<EventFullDto> getEventsByAdmin(List<Integer> users,
-                                 List<String> states,
+                                 List<State> states,
                                  List<Integer> categories,
                                  String rangeStart,
                                  String rangeEnd,

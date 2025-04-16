@@ -2,6 +2,8 @@ package ru.practicum.event.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -72,8 +74,8 @@ public class Event {
     @Column(name = "request_moderation")
     private Boolean requestModeration;
 
-    @Column(name = "state")
-    private String state;
+    @Enumerated(EnumType.STRING)
+    private State state;
 
     @Column(name = "title", nullable = false)
     private String title;

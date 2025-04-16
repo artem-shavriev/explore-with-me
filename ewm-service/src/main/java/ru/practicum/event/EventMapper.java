@@ -80,7 +80,7 @@ public class EventMapper {
         }
 
         eventFullDto.setRequestModeration(event.getRequestModeration());
-        eventFullDto.setState(event.getState());
+        eventFullDto.setState(event.getState().toString());
         eventFullDto.setTitle(event.getTitle());
         eventFullDto.setViews(views);
 

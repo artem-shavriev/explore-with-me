@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import ru.practicum.event.model.Event;
+import ru.practicum.event.model.State;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "AND (e.participantLimit = 0 OR e.confirmedRequests <= e.participantLimit)" +
             "ORDER BY e.eventDate")
-    Page<Event> getAvailableEventsWithTimeRangeSortEventDate(@Param("state") String state,
+    Page<Event> getAvailableEventsWithTimeRangeSortEventDate(@Param("state") State state,
                                                              @Param("text") String text,
                                                              @Param("categories") List<Integer> categories,
                                                              @Param("paid") Boolean paid,
@@ -51,7 +52,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND (:paid IS NULL OR e.paid = :paid) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "ORDER BY e.eventDate")
-    Page<Event> getEventsWithTimeRangeSortEventDate(@Param("state") String state,
+    Page<Event> getEventsWithTimeRangeSortEventDate(@Param("state") State state,
                                                     @Param("text") String text,
                                                     @Param("categories") List<Integer> categories,
                                                     @Param("paid") Boolean paid,
@@ -66,7 +67,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
             "ORDER BY e.eventDate")
     Page<Event> getEventsByAdminSortByDate(@Param("users") List<Integer> users,
-                                            @Param("states") List<String> states,
+                                            @Param("states") List<State> states,
                                             @Param("categories") List<Integer> categories,
                                             @Param("rangeStart") LocalDateTime rangeStart,
                                             @Param("rangeEnd") LocalDateTime rangeEnd,
