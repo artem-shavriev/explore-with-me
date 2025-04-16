@@ -8,6 +8,7 @@ import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.dto.UpdateEventUserRequest;
+import ru.practicum.event.model.Event;
 import ru.practicum.participation.dto.ParticipationRequestDto;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public interface EventService {
 
     EventFullDto updateEventByAdmin(Integer eventId, UpdateEventAdminRequest updateRequest);
 
-    List<EventShortDto> getEventsByUser(Integer userId, Integer from, Integer size);
+    List<EventShortDto> getEventsByUser(Integer userId, Integer from, Integer size, String uri);
 
     EventFullDto addEvent(Integer userId, NewEventDto newEventDto);
 
@@ -52,5 +53,5 @@ public interface EventService {
 
     void addHit(String uri, String ip);
 
-    void setViews(Integer eventId, String uri);
+    List<EventShortDto> setViewsForShortDto(List<Event> events);
 }

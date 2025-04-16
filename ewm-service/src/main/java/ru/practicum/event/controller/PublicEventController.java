@@ -42,7 +42,7 @@ public class PublicEventController {
     @GetMapping("/{id}")
     public EventFullDto getEventById(@PathVariable Integer id, HttpServletRequest request) {
         eventService.addHit(request.getRequestURI(), request.getRemoteAddr());
-        eventService.setViews(id, request.getRequestURI());
+
         return eventService.getEventById(id);
     }
 }

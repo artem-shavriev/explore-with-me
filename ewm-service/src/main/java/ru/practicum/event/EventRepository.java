@@ -13,7 +13,7 @@ import java.util.List;
 public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllByCategoryOrderByEventDateDesc(Integer categoryId);
 
-    Page<Event> findAllByInitiatorOrderByViews(Integer initiator, Pageable pageable);
+    Page<Event> findAllByInitiator(Integer initiator, Pageable pageable);
 
     @Query("SELECT e " +
             "FROM Event e " +
@@ -54,7 +54,7 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                                     @Param("rangeEnd") LocalDateTime rangeEnd,
                                                     Pageable pageable);
 
-    @Query("SELECT e FROM Event e " +
+    /*@Query("SELECT e FROM Event e " +
             "WHERE e.state = :state " +
             "AND (lower(e.description) LIKE lower(concat('%', :text, '%')) " +
             "OR (lower(e.annotation) LIKE lower(concat('%', :text, '%')))) " +
@@ -87,13 +87,15 @@ public interface EventRepository extends JpaRepository<Event, Integer> {
                                                   @Param("rangeEnd") LocalDateTime rangeEnd,
                                                   Pageable pageable);
 
+     */
+
     @Query("SELECT e FROM Event e " +
             "WHERE (:users IS NULL OR e.initiator IN :users) " +
             "AND (:states IS NULL OR e.state IN :states) " +
             "AND (:categories IS NULL OR e.category IN :categories) " +
             "AND e.eventDate BETWEEN :rangeStart AND :rangeEnd " +
-            "ORDER BY e.views")
-    Page<Event> getEventsByAdminSortByViews(@Param("users") List<Integer> users,
+            "ORDER BY e.eventDate")
+    Page<Event> getEventsByAdminSortByDate(@Param("users") List<Integer> users,
                                             @Param("states") List<String> states,
                                             @Param("categories") List<Integer> categories,
                                             @Param("rangeStart") LocalDateTime rangeStart,

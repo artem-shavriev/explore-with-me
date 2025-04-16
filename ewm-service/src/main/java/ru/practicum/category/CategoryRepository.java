@@ -11,7 +11,5 @@ import java.util.List;
 public interface CategoryRepository extends JpaRepository<Category, Integer> {
     List<Category> findAllByName(String name);
 
-    @Query("SELECT c FROM Category c " +
-            "WHERE c.name = ?1 AND c.id != ?2")
-    List<Category> findAllByNameWithoutCurrent(String name, Integer id);
+    List<Category> findAllByNameAndIdNot(String name, Integer id);
 }

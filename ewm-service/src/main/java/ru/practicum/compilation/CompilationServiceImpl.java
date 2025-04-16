@@ -11,6 +11,8 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.dto.UpdateCompilationRequest;
 import ru.practicum.compilation.model.Compilation;
+import ru.practicum.event.EventRepository;
+import ru.practicum.event.model.Event;
 import ru.practicum.exception.NotFoundException;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.List;
 public class CompilationServiceImpl implements CompilationService {
     private final CompilationRepository compilationRepository;
     private final CompilationMapper compilationMapper;
+    private final EventRepository eventRepository;
 
     @Override
     @Transactional
@@ -46,7 +49,9 @@ public class CompilationServiceImpl implements CompilationService {
     @Override
     @Transactional
     public CompilationDto addCompilation(NewCompilationDto newCompilationDto) {
-        Compilation compilation = compilationMapper.newCompilationDtoToCompilation(newCompilationDto);
+        List<Event> events = eventRepository.findByIdList(newCompilationDto.getEvents());
+
+        Compilation compilation = compilationMapper.newCompilationDtoToCompilation(newCompilationDto, events);
 
         compilation = compilationRepository.save(compilation);
 
@@ -71,8 +76,10 @@ public class CompilationServiceImpl implements CompilationService {
         Compilation compilation = compilationRepository.findById(compId)
                 .orElseThrow(() -> new NotFoundException("Обновляемая подборка не найдена по id"));
 
+
+        List<Event> events = eventRepository.findByIdList(updateCompilation.getEvents());
         if (updateCompilation.hasEvents()) {
-            compilation.setEvents(updateCompilation.getEvents());
+            compilation.setEvents(events);
         }
 
         if (updateCompilation.hasTitle()) {

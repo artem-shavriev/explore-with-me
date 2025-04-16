@@ -6,7 +6,7 @@ import ru.practicum.compilation.dto.CompilationDto;
 import ru.practicum.compilation.dto.NewCompilationDto;
 import ru.practicum.compilation.model.Compilation;
 import ru.practicum.event.EventMapper;
-import ru.practicum.event.EventRepository;
+import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.model.Event;
 
@@ -15,8 +15,7 @@ import java.util.List;
 @Component
 @AllArgsConstructor
 public class CompilationMapper {
-    private final EventRepository eventRepository;
-    private final EventMapper eventMapper;
+    private final EventService eventService;
 
     public CompilationDto mapToDto(Compilation compilation) {
         CompilationDto compilationDto = new CompilationDto();
@@ -25,15 +24,15 @@ public class CompilationMapper {
         compilationDto.setPinned(compilation.getPinned());
         compilationDto.setTitle(compilation.getTitle());
 
-        List<Event> eventList = eventRepository.findByIdList(compilation.getEvents());
-        List<EventShortDto> eventShortDtoList = eventMapper.eventToShortDto(eventList);
+        List<EventShortDto> eventShortDtoList = eventService.setViewsForShortDto(compilation.getEvents());
         compilationDto.setEvents(eventShortDtoList);
 
         return compilationDto;
     }
 
-    public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto) {
-        return Compilation.builder().events(newCompilationDto.getEvents())
+    public Compilation newCompilationDtoToCompilation(NewCompilationDto newCompilationDto, List<Event> events) {
+
+        return Compilation.builder().events(events)
                 .pinned(newCompilationDto.getPinned()).title(newCompilationDto.getTitle()).build();
     }
 }

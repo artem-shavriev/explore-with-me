@@ -80,7 +80,6 @@ public class EventServiceImpl implements EventService {
             throw new ValidationException("Дата начала не может быть после конца.");
         }
 
-        if (sort.equals("EVENT_DATE")) {
             Page<Event> events;
             if (onlyAvailable) {
                 events = eventRepository.getAvailableEventsWithTimeRangeSortEventDate(state, text,
@@ -90,22 +89,8 @@ public class EventServiceImpl implements EventService {
                         categories, paid, start, end, eventPage);
             }
             log.info("Список событий получен. Выборка по веремни. Сортеровка по дате.");
-            return events.stream().map(eventMapper::eventToShortDto).toList();
 
-        } else if (sort.equals("VIEWS")) {
-            Page<Event> events;
-            if (onlyAvailable) {
-                events = eventRepository.getAvailableEventsWithTimeRangeSortByViews(state, text,
-                        categories, paid, start, end, eventPage);
-            } else {
-                events = eventRepository.getEventsWithTimeRangeSortByViews(state, text,
-                        categories, paid, start, end, eventPage);
-            }
-            log.info("Список событий получен. Выборка по веремни. Сортеровка по просмотрам.");
-            return events.stream().map(eventMapper::eventToShortDto).toList();
-        } else {
-            throw new NotFoundException("Неизвестный параметр sort");
-        }
+            return setViewsForShortDto(events.getContent());
     }
 
     @Override
@@ -117,7 +102,7 @@ public class EventServiceImpl implements EventService {
             throw new NotFoundException("Это событие еще не опубликовано.");
         }
         log.info("Событие получено по id {}", id);
-        return eventMapper.eventToFullDto(event);
+        return setViewsForFullDto(event);
     }
 
     @Override
@@ -147,10 +132,10 @@ public class EventServiceImpl implements EventService {
         }
 
         Page<Event> events = eventRepository
-                .getEventsByAdminSortByViews(users, states, categories, start, end, eventPage);
+                .getEventsByAdminSortByDate(users, states, categories, start, end, eventPage);
 
         log.info("Список событий по запросу администратора получен.");
-        return events.stream().map(eventMapper::eventToFullDto).toList();
+        return setViewsForFullDto(events.getContent());
     }
 
     @Override
@@ -233,21 +218,23 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
 
         log.info("Событие обновлено администратором.");
-        return eventMapper.eventToFullDto(event);
+        return setViewsForFullDto(event);
     }
 
     @Override
     @Transactional
-    public List<EventShortDto> getEventsByUser(Integer userId, Integer from, Integer size) {
+    public List<EventShortDto> getEventsByUser(Integer userId, Integer from, Integer size, String uri) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователя с данным id не существует."));
 
         Pageable eventPage = PageRequest.of(from, size);
 
-        Page<Event> events = eventRepository.findAllByInitiatorOrderByViews(userId, eventPage);
+        Page<Event> events = eventRepository.findAllByInitiator(userId, eventPage);
+
+        Long views = getViews(uri);
 
         log.info("Список событий по запросуп пользовтеля получен.");
-        return events.stream().map(eventMapper::eventToShortDto).toList();
+        return events.stream().map(event -> eventMapper.eventToShortDto(event, views)).toList();
     }
 
     @Override
@@ -267,11 +254,10 @@ public class EventServiceImpl implements EventService {
         event.setState(State.PENDING.toString());
         event.setInitiator(userId);
         event.setConfirmedRequests(0);
-        event.setViews(0L);
         event = eventRepository.save(event);
 
         log.info("Событие с id {} добавлено пользователем с id {}", event.getId(), userId);
-        return eventMapper.eventToFullDto(event);
+        return setViewsForFullDto(event);
     }
 
     @Override
@@ -286,7 +272,8 @@ public class EventServiceImpl implements EventService {
             throw new ForbiddenException("Событие созданно другим пользователем. ");
         }
 
-        return eventMapper.eventToFullDto(event);
+        log.info("Событие с id {} получено пользователем с id {}.", eventId, userId);
+        return setViewsForFullDto(event);
     }
 
     @Override
@@ -364,7 +351,7 @@ public class EventServiceImpl implements EventService {
         event = eventRepository.save(event);
 
         log.info("Событие обновлено пользователем.");
-        return eventMapper.eventToFullDto(event);
+        return setViewsForFullDto(event);
     }
 
     @Override
@@ -472,13 +459,39 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public void setViews(Integer eventId, String uri) {
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("Событие не найдено."));
+    public List<EventShortDto> setViewsForShortDto(List<Event> events) {
+        List<EventShortDto> shortEvents = new ArrayList<>();
 
-        event.setViews(getViews(uri));
-        eventRepository.save(event);
-        log.info("Просмотры события обновлены.");
+        for (Event event : events) {
+            String uri = "/events/" + event.getId();
+            Long views = getViews(uri);
+            shortEvents.add(eventMapper.eventToShortDto(event, views));
+        }
+
+        log.info("Просмотры события добавлены для списка short событий.");
+        return shortEvents;
+    }
+
+    public List<EventFullDto> setViewsForFullDto(List<Event> events) {
+        List<EventFullDto> fullEvents = new ArrayList<>();
+
+        for (Event event : events) {
+            String uri = "/events/" + event.getId();
+            Long views = getViews(uri);
+            fullEvents.add(eventMapper.eventToFullDto(event, views));
+        }
+
+        log.info("Просмотры события добавлены для списка full событий.");
+        return fullEvents;
+    }
+
+    public EventFullDto setViewsForFullDto(Event event) {
+        String uri = "/events/" + event.getId();
+        Long views = getViews(uri);
+
+        log.info("Просмотры добавлены для событий с id {}.", event.getId());
+
+        return eventMapper.eventToFullDto(event, views);
     }
 
     public String stateActionToState(String action) {

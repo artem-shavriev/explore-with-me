@@ -26,12 +26,12 @@ public class EventMapper {
     private final UserMapper userMapper;
     private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public EventShortDto eventToShortDto(Event event) {
+    public EventShortDto eventToShortDto(Event event, Long views) {
         EventShortDto eventShortDto = new EventShortDto();
 
         eventShortDto.setId(event.getId());
         eventShortDto.setAnnotation(event.getAnnotation());
-
+       // свять в эвент для категорий многие ко многим?
         CategoryDto category = categoryService.getByIdCategory(event.getCategory());
         eventShortDto.setCategory(category);
 
@@ -40,22 +40,18 @@ public class EventMapper {
 
         String eventDated = event.getEventDate().format(formatter);
         eventShortDto.setEventDate(eventDated);
-
+        // свять в эвент для initiator один ко многим?
         UserShortDto user = userMapper.dtoToShortDto(userService.getUserById(event.getInitiator()));
         eventShortDto.setInitiator(user);
 
         eventShortDto.setPaid(event.getPaid());
         eventShortDto.setTitle(event.getTitle());
-        eventShortDto.setViews(event.getViews());
+        eventShortDto.setViews(views);
 
         return eventShortDto;
     }
 
-    public List<EventShortDto> eventToShortDto(List<Event> events) {
-        return events.stream().map(this::eventToShortDto).toList();
-    }
-
-    public EventFullDto eventToFullDto(Event event) {
+    public EventFullDto eventToFullDto(Event event, Long views) {
         EventFullDto eventFullDto = new EventFullDto();
 
         eventFullDto.setId(event.getId());
@@ -85,7 +81,7 @@ public class EventMapper {
         eventFullDto.setRequestModeration(event.getRequestModeration());
         eventFullDto.setState(event.getState());
         eventFullDto.setTitle(event.getTitle());
-        eventFullDto.setViews(event.getViews());
+        eventFullDto.setViews(views);
 
         return eventFullDto;
     }

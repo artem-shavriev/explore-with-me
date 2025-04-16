@@ -79,7 +79,7 @@ public class CategoryServiceImpl implements CategoryService {
         Category category = categoryRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Категория не найдена по id"));
 
-        if (!categoryRepository.findAllByNameWithoutCurrent(newCategoryDto.getName(), id).isEmpty()) {
+        if (!categoryRepository.findAllByNameAndIdNot(newCategoryDto.getName(), id).isEmpty()) {
             throw new ConflictException("Имя категории уже занято.");
         }
 
