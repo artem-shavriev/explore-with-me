@@ -6,6 +6,7 @@ import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.CommentDtoUpdate;
 import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.model.Comment;
+import ru.practicum.comment.model.CommentStatus;
 import ru.practicum.event.EventRepository;
 import ru.practicum.event.model.Event;
 import ru.practicum.exception.NotFoundException;
@@ -37,19 +38,5 @@ public class CommentMapper {
 
     public List<CommentDto> mapToCommentDto(List<Comment> comments) {
         return comments.stream().map(this::mapToCommentDto).toList();
-    }
-
-    public Comment CommentDtoUpdateToComment(CommentDtoUpdate commentDtoUpdate) {
-        Comment comment = new Comment();
-
-        if (commentDtoUpdate.hasStatus()) {
-            comment.setStatus(commentDtoUpdate.getStatus());
-        }
-
-        if (commentDtoUpdate.hasText()) {
-            comment.setText(commentDtoUpdate.getText());
-        }
-
-        return  comment;
     }
 }

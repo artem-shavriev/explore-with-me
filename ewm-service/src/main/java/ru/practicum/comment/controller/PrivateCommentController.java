@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/comments/{userId}")
+@RequestMapping("/user/comments/{userId}")
 @Validated
 public class PrivateCommentController {
     private final CommentService commentService;
@@ -28,7 +28,7 @@ public class PrivateCommentController {
     @PostMapping("/{eventId}")
     public CommentDto addComment(@PathVariable Integer eventId,
                                  @PathVariable Integer userId,
-                                 @Valid  @RequestBody NewCommentDto commentDto) {
+                                 @Valid @RequestBody NewCommentDto commentDto) {
 
         return commentService.addComment(eventId, userId, commentDto);
     }
@@ -36,7 +36,7 @@ public class PrivateCommentController {
     @PatchMapping("{commentId}")
     public CommentDto updateComment(@PathVariable Integer userId,
                                     @PathVariable Integer commentId,
-                                    @Valid  @RequestBody CommentDtoUpdate commentDtoUpdate) {
+                                    @Valid @RequestBody CommentDtoUpdate commentDtoUpdate) {
 
         return commentService.updateComment(userId, commentId, commentDtoUpdate);
     }

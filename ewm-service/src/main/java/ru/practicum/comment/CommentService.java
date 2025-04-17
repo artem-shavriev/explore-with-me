@@ -39,11 +39,11 @@ public class CommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Комментатор не найден."));
 
-        if (event.getInitiator().equals(userId)) {
+        if (event.getInitiator().getId().equals(userId)) {
             throw new ValidationException("Создатель события не может оставить к нему комментарий.");
         }
 
-        if (!event.getState().equals(State.PUBLISHED.toString())) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new ValidationException("На событие нельзя оставить комментарий так как оно не опубликовано.");
         }
 
@@ -55,13 +55,13 @@ public class CommentService {
         List<ParticipationRequest> participationRequest = participationRequestRepository
                 .findAllByRequesterAndEvent(userId, eventId);
 
-        if (!participationRequest.getFirst().getStatus().equals(Status.CONFIRMED.toString())) {
+        if (!participationRequest.getFirst().getStatus().equals(Status.CONFIRMED)) {
             throw new ValidationException("Пользователь не может оставить комменатрий так как его запрос " +
                     "на участвие в мероприятии не подтвержден.");
         }
 
         Comment comment = commentMapper.newCommentDtoToComment(commentDto, userId, eventId);
-        comment.setStatus(CommentStatus.PENDING.toString());
+        comment.setStatus(CommentStatus.PENDING);
         comment.setCreated(LocalDateTime.now());
 
         comment = commentRepository.save(comment);
@@ -77,16 +77,18 @@ public class CommentService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Комментатор не найден."));
 
-        if (!comment.getAuthor().equals(userId)) {
+        if (!comment.getAuthor().getId().equals(userId)) {
             throw new ValidationException("Пользователь не может изменить коментарий" +
                     " так как не является его создателем.");
         }
 
-        if (comment.getStatus().equals(CommentStatus.PUBLISHED.toString())) {
+        if (comment.getStatus().equals(CommentStatus.PUBLISHED)) {
             throw new ValidationException("Нельжя изменить комменатрий так как он уже опубликован.");
         }
 
-        comment = commentMapper.CommentDtoUpdateToComment(commentDtoUpdate);
+        if (commentDtoUpdate.hasText()) {
+            comment.setText(commentDtoUpdate.getText());
+        }
 
         comment = commentRepository.save(comment);
 
@@ -108,12 +110,12 @@ public class CommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие не найдено."));
 
-        if (!event.getState().equals(State.PUBLISHED.toString())) {
+        if (!event.getState().equals(State.PUBLISHED)) {
             throw new ValidationException("Нельзя просмотреть комменатрии на неопубликованное событие.");
         }
 
         List<Comment> comments = commentRepository
-                .findAllByEventIdAndStatus(eventId, CommentStatus.PUBLISHED.toString());
+                .findByEventIdAndStatus(eventId, CommentStatus.PUBLISHED);
 
         log.info("Комментарии события с id {} получены.", eventId);
         return commentMapper.mapToCommentDto(comments);
@@ -125,7 +127,7 @@ public class CommentService {
 
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментария с данным id не существует."));
-        if (!comment.getAuthor().equals(userId)) {
+        if (!comment.getAuthor().getId().equals(userId)) {
             throw new ValidationException("Нельзя удалить не свой комментарий.");
         }
 
@@ -138,7 +140,7 @@ public class CommentService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментария с данным id не существует."));
 
-        if (!comment.getStatus().equals(CommentStatus.PUBLISHED.toString())) {
+        if (!comment.getStatus().equals(CommentStatus.PUBLISHED)) {
             throw new ValidationException("Администратор не может удалить неопубликованный комментарий.");
         }
 
@@ -146,19 +148,29 @@ public class CommentService {
         commentRepository.deleteById(commentId);
     }
 
-    public CommentDto updateStatusByAdmin(Integer commentId, String status) {
+    public CommentDto updateStatusByAdmin(Integer commentId, CommentDtoUpdate commentDtoUpdate) {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new NotFoundException("Комментария с данным id не существует."));
 
-        if (!comment.getStatus().equals(CommentStatus.PENDING.toString())) {
+        if (!comment.getStatus().equals(CommentStatus.PENDING)) {
             throw new ValidationException("Изменить статус комментария нельзя. Так как статус не PENDING");
         }
 
+        CommentStatus status = stringStatusToEnum(commentDtoUpdate.getStatus());
         comment.setStatus(status);
         comment = commentRepository.save(comment);
 
         log.info("Статус комментария с id {} обновлен администратором на {}", commentId, status);
         return commentMapper.mapToCommentDto(comment);
+    }
+
+    public CommentStatus stringStatusToEnum(String string) {
+        return switch (string) {
+            case "PUBLISHED" -> CommentStatus.PUBLISHED;
+            case "CANCELED" -> CommentStatus.CANCELED;
+            case "PENDING" -> CommentStatus.PENDING;
+            default -> throw new NotFoundException("Неизвестный статус.");
+        };
     }
 }
 
