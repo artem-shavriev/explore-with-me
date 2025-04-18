@@ -1,4 +1,0 @@
-stats-server:
-  #  url: http://stats-server:9090
-  #  локально
-  url: http://localhost:9090
