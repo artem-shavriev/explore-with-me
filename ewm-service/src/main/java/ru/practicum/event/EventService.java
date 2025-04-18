@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.RequestParamsDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @Service
 public interface EventService {
-    List<EventShortDto> getEventsWithTimeRange(String text,
+    /*List<EventShortDto> getEventsWithTimeRange(String text,
                                                List<Integer> categories,
                                                Boolean paid,
                                                String rangeStart,
@@ -22,7 +23,8 @@ public interface EventService {
                                                Integer from,
                                                Integer size,
                                                String uri,
-                                               String ip);
+                                               String ip);*/
+    List<EventShortDto> getEvents(RequestParamsDto dto);
 
     EventFullDto getEventById(Integer id, String uri, String ip);
 

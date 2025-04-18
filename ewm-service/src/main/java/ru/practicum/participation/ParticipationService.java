@@ -31,11 +31,11 @@ public class ParticipationService {
     private final UserRepository userRepository;
 
     public List<ParticipationRequestDto> getParticipationByRequester(Integer requesterId) {
-        return participationMapper.mapToDto(participationRepository.findAllByRequester(requesterId));
+        return participationMapper.mapToDto(participationRepository.findByRequesterId(requesterId));
     }
 
     public ParticipationRequestDto addParticipation(Integer requesterId, Integer eventId) {
-        if (!participationRepository.findAllByRequesterAndEvent(requesterId, eventId).isEmpty()) {
+        if (!participationRepository.findByRequesterIdAndEventId(requesterId, eventId).isEmpty()) {
             throw new ConflictException("Такой запрос уже существует.");
         }
 
@@ -114,7 +114,7 @@ public class ParticipationService {
             throw new ForbiddenException("Событие созданно другим пользователем. ");
         }
 
-        return participationMapper.mapToDto(participationRepository.findAllByEvent(eventId));
+        return participationMapper.mapToDto(participationRepository.findByEventId(eventId));
     }
 
     public EventRequestStatusUpdateResult updateRequestsStatus(Integer userId, Integer eventId,

@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import ru.practicum.EndpointHit;
@@ -18,6 +20,7 @@ import ru.practicum.client.StatsClient;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
 import ru.practicum.event.dto.NewEventDto;
+import ru.practicum.event.dto.RequestParamsDto;
 import ru.practicum.event.dto.UpdateEventAdminRequest;
 import ru.practicum.event.dto.UpdateEventUserRequest;
 import ru.practicum.event.model.Event;
@@ -33,7 +36,9 @@ import ru.practicum.user.model.User;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -50,49 +55,44 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @Transactional
-    public List<EventShortDto> getEventsWithTimeRange(String text,
-                                                      List<Integer> categories,
-                                                      Boolean paid,
-                                                      String rangeStart,
-                                                      String rangeEnd,
-                                                      Boolean onlyAvailable,
-                                                      String sort,
-                                                      Integer from,
-                                                      Integer size,
-                                                      String uri,
-                                                      String ip) {
-
+    public List<EventShortDto> getEvents(RequestParamsDto dto) {
         LocalDateTime start;
         LocalDateTime end;
-        Pageable eventPage = PageRequest.of(from, size);
-        State state = State.PUBLISHED;
-        if (rangeStart != null) {
-            start = LocalDateTime.parse(rangeStart, formatter);
-        } else {
-            start = LocalDateTime.now().minusYears(10);
-        }
 
-        if (rangeEnd != null) {
-            end = LocalDateTime.parse(rangeEnd, formatter);
-        } else {
-            end = LocalDateTime.now().plusYears(10);
-        }
-
-        if (start.isAfter(end)) {
-            throw new ValidationException("Дата начала не может быть после конца.");
-        }
+        Pageable eventPage = PageRequest.of(dto.getFrom(), dto.getSize(),
+                Sort.by(Sort.Direction.ASC, "eventDate"));
 
         Page<Event> events;
-        if (onlyAvailable) {
-            events = eventRepository.getAvailableEventsWithTimeRangeSortEventDate(state, text,
-                    categories, paid, start, end, eventPage);
+        Specification<Event> spec = Specification.where(null);
+
+        if (dto.getText() != null) spec = spec.and(EventSpecification.hasText(dto.getText()));
+
+        if (dto.getCategories() != null) spec = spec.and(EventSpecification.hasCategories(dto.getCategories()));
+
+        if (dto.getPaid() != null) spec = spec.and(EventSpecification.hasPaid(dto.getPaid()));
+
+        if (dto.getRangeStart() != null && dto.getRangeEnd() != null) {
+            start = LocalDateTime.parse(dto.getRangeStart(), formatter);
+            end = LocalDateTime.parse(dto.getRangeEnd(), formatter);
+
+            if (start.isAfter(end)) {
+                throw new ValidationException("Дата начала не может быть после конца.");
+            }
+
+            spec = spec.and(EventSpecification.dateBetween(start, end));
         } else {
-            events = eventRepository.getEventsWithTimeRangeSortEventDate(state, text,
-                    categories, paid, start, end, eventPage);
+            start = LocalDateTime.now();
+            spec = spec.and(EventSpecification.dateAfterNow(start));
         }
+
+        spec = spec.and(EventSpecification.hasState(State.PUBLISHED));
+
+        if (dto.getOnlyAvailable() != null) spec = spec.and(EventSpecification.available(dto.getOnlyAvailable()));
+
+        events = eventRepository.findAll(spec, eventPage);
         log.info("Список событий получен. Выборка по веремни. Сортеровка по дате.");
 
-        addHit(uri, ip);
+        addHit(dto.getUri(), dto.getIp());
         return setViewsForShortDto(events.getContent());
     }
 
@@ -121,24 +121,34 @@ public class EventServiceImpl implements EventService {
                                                Integer from,
                                                Integer size) {
 
-        Pageable eventPage = PageRequest.of(from, size);
         LocalDateTime start;
         LocalDateTime end;
+        Pageable eventPage = PageRequest.of(from, size, Sort.by(Sort.Direction.ASC, "eventDate"));
 
-        if (rangeStart != null) {
+        Page<Event> events;
+        Specification<Event> spec = Specification.where(null);
+
+        if (categories != null) spec = spec.and(EventSpecification.hasCategories(categories));
+
+        if (states != null) spec = spec.and(EventSpecification.hasStates(states));
+
+        if (users != null) spec = spec.and(EventSpecification.hasUsers(users));
+
+        if (rangeStart != null && rangeEnd != null) {
             start = LocalDateTime.parse(rangeStart, formatter);
-        } else {
-            start = LocalDateTime.now().minusYears(10);
-        }
-
-        if (rangeEnd != null) {
             end = LocalDateTime.parse(rangeEnd, formatter);
+
+            if (start.isAfter(end)) {
+                throw new ValidationException("Дата начала не может быть после конца.");
+            }
+
+            spec = spec.and(EventSpecification.dateBetween(start, end));
         } else {
-            end = LocalDateTime.now().plusYears(10);
+            start = LocalDateTime.now();
+            spec = spec.and(EventSpecification.dateAfterNow(start));
         }
 
-        Page<Event> events = eventRepository
-                .getEventsByAdminSortByDate(users, states, categories, start, end, eventPage);
+        events = eventRepository.findAll(spec, eventPage);
 
         log.info("Список событий по запросу администратора получен.");
         return setViewsForFullDto(events.getContent());
@@ -395,28 +405,119 @@ public class EventServiceImpl implements EventService {
         }
     }
 
+    public Map<String, Long> getMapOfViewsAndEventUri(List<String> uris) {
+        LocalDateTime start = LocalDateTime.now().minusYears(5);
+        LocalDateTime end = LocalDateTime.now();
+        Map<String, Long> eventsViewsMap = new HashMap<>();
+
+        try {
+            ResponseEntity<List<ViewStats>> response = statsClient
+                    .getStatsUri(start.format(formatter), end.format(formatter), true, uris);
+
+            if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null && !response.getBody().isEmpty()) {
+
+                List<ViewStats> stats = response.getBody();
+
+                stats.forEach(stat -> {
+                    eventsViewsMap.put(stat.getUri(), stat.getHits());
+                });
+
+                return eventsViewsMap;
+            } else {
+               return eventsViewsMap;
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     @Transactional
     public List<EventShortDto> setViewsForShortDto(List<Event> events) {
         List<EventShortDto> shortEvents = new ArrayList<>();
+        List<String> uris = new ArrayList<>();
 
-        for (Event event : events) {
-            String uri = "/events/" + event.getId();
-            Long views = getViews(uri);
-            shortEvents.add(eventMapper.eventToShortDto(event, views));
+        events.forEach(event -> {
+            uris.add("/events/" + event.getId());
+        });
+
+        Map<String, Long> mapOfViews = getMapOfViewsAndEventUri(uris);
+
+        if (mapOfViews.isEmpty()) {
+            for (Event event : events) {
+                shortEvents.add(eventMapper.eventToShortDto(event, 0L));
+            }
+        } else {
+            for (Event event : events) {
+                String uri = "/events/" + event.getId();
+                Long views = mapOfViews.get(uri);
+
+                shortEvents.add(eventMapper.eventToShortDto(event, views));
+            }
         }
 
         log.info("Просмотры события добавлены для списка short событий.");
         return shortEvents;
     }
 
-    public List<EventFullDto> setViewsForFullDto(List<Event> events) {
+   /* @Override
+    @Transactional
+    public List<EventShortDto> setViewsForShortDto(List<Event> events) {
+        List<EventShortDto> shortEvents = new ArrayList<>();
+        List<String> uris = new ArrayList<>();
+
+        events.forEach(event -> {
+            uris.add("/events/" + event.getId());
+        });
+
+        Map<String, Long> mapOfViews = getMapOfViewsAndEventUri(uris);
+
+        for (Event event : events) {
+            String uri = "/events/" + event.getId();
+
+
+            Long views = getViews(uri);
+            shortEvents.add(eventMapper.eventToShortDto(event, views));
+        }
+
+        log.info("Просмотры события добавлены для списка short событий.");
+        return shortEvents;
+    }*/
+
+    /*public List<EventFullDto> setViewsForFullDto(List<Event> events) {
         List<EventFullDto> fullEvents = new ArrayList<>();
 
         for (Event event : events) {
             String uri = "/events/" + event.getId();
             Long views = getViews(uri);
             fullEvents.add(eventMapper.eventToFullDto(event, views));
+        }
+
+        log.info("Просмотры события добавлены для списка full событий.");
+        return fullEvents;
+    }*/
+
+    public List<EventFullDto> setViewsForFullDto(List<Event> events) {
+        List<EventFullDto> fullEvents = new ArrayList<>();
+        List<String> uris = new ArrayList<>();
+
+        events.forEach(event -> {
+            uris.add("/events/" + event.getId());
+        });
+
+        Map<String, Long> mapOfViews = getMapOfViewsAndEventUri(uris);
+
+        if (mapOfViews.isEmpty()) {
+            for (Event event : events) {
+                fullEvents.add(eventMapper.eventToFullDto(event, 0L));
+            }
+        } else {
+            for (Event event : events) {
+                String uri = "/events/" + event.getId();
+                Long views = mapOfViews.get(uri);
+
+                fullEvents.add(eventMapper.eventToFullDto(event, views));
+            }
         }
 
         log.info("Просмотры события добавлены для списка full событий.");

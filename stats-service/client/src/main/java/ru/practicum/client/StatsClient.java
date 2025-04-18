@@ -19,6 +19,7 @@ import static java.util.stream.Collectors.joining;
 @Service
 public class StatsClient extends BaseClient {
     private static final String API_PREFIX = "/stats";
+    private final String serverUrl;
 
     @Autowired
     public StatsClient(@Value("${stats-server.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -28,6 +29,8 @@ public class StatsClient extends BaseClient {
                         .requestFactory(() -> new HttpComponentsClientHttpRequestFactory())
                         .build()
         );
+
+        this.serverUrl = serverUrl;
     }
 
     public ResponseEntity<List<ViewStats>> getStatsUri(String start, String end,
@@ -38,8 +41,6 @@ public class StatsClient extends BaseClient {
     }
 
     public String pathEncoderUri(String start, String end, Boolean unique, List<String> uris) {
-        //String serverUrl = "http://localhost:9090/stats?"; //локально
-        String serverUrl = "http://stats-server:9090/stats?";
         Map<String, String> requestParams = new HashMap<>();
         requestParams.put("start", start);
         requestParams.put("end", end);
@@ -53,7 +54,7 @@ public class StatsClient extends BaseClient {
                 .map(key -> {
                         return key + "=" + requestParams.get(key);
                 })
-                .collect(joining("&", serverUrl, ""));
+                .collect(joining("&", serverUrl + "/stats?", ""));
     }
 }
 

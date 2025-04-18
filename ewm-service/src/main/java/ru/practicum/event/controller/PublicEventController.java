@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.event.EventService;
 import ru.practicum.event.dto.EventFullDto;
 import ru.practicum.event.dto.EventShortDto;
+import ru.practicum.event.dto.RequestParamsDto;
 
 import java.util.List;
 
@@ -33,8 +34,11 @@ public class PublicEventController {
                                          @RequestParam(defaultValue = "10") Integer size,
                                          HttpServletRequest request) {
 
-        return eventService.getEventsWithTimeRange(text, categories, paid, rangeStart,
-                rangeEnd, onlyAvailable, sort, from, size, request.getRequestURI(), request.getRemoteAddr());
+        RequestParamsDto dto = RequestParamsDto.builder().text(text).categories(categories).paid(paid)
+                .rangeStart(rangeStart).rangeEnd(rangeEnd).onlyAvailable(onlyAvailable).sort(sort)
+                .from(from).size(size).uri(request.getRequestURI()).ip(request.getRemoteAddr()).build();
+
+        return eventService.getEvents(dto);
     }
 
     @GetMapping("/{id}")
