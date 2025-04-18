@@ -21,7 +21,8 @@ public class StatsController {
     private final StatsService statsServiceImpl;
 
     @GetMapping
-    public List<ViewStats> getStats(@RequestParam String start, @RequestParam String end,
+    public List<ViewStats> getStats(@RequestParam String start,
+                                    @RequestParam String end,
                                     @RequestParam(defaultValue = "false") Boolean unique,
                                     @RequestParam(required = false) ArrayList<String> uris) {
         if (uris == null) {

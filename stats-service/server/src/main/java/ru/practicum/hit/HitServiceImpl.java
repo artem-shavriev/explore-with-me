@@ -19,6 +19,6 @@ public class HitServiceImpl implements HitService {
     @Transactional
     public void addHit(EndpointHit dto) {
         Hit hit = hitMapper.mapToHit(dto);
-        hit = repository.save(hit);
+        repository.save(hit);
     }
 }
