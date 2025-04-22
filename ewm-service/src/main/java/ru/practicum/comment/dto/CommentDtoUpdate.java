@@ -21,22 +21,8 @@ public class CommentDtoUpdate {
     private Integer authorId;
     private LocalDateTime created;
 
-    public boolean hasId() {
-        return id != null;
-    }
-    public boolean hasEventId() {
-        return eventId != null;
-    }
-    public boolean hasAuthorId() {
-        return authorId != null;
-    }
     public boolean hasText() {
         return text != null;
     }
-    public boolean hasCreated() {
-        return created != null;
-    }
-    public boolean hasStatus() {
-        return status != null;}
 }
 
