@@ -76,27 +76,4 @@ public class EventSpecification {
             );
         };
     }
-
-        /*public static Specification<Event> hasCategories(List<Integer> categories) {
-            return (root, query, criteriaBuilder) -> {
-                if (categories == null || categories.isEmpty()) {
-                    return criteriaBuilder.conjunction();
-                }
-                return root.join("category").get("id").in(categories);
-            };
-        }*/
-
-
-   /*
-    (@RequestParam(defaultValue = "") String text,
-    @RequestParam(required = false)
-    List<Integer> categories,
-    @RequestParam(required = false) Boolean paid,
-    @RequestParam(required = false) String rangeStart,
-    @RequestParam(required = false) String rangeEnd,
-    @RequestParam(defaultValue = "false") Boolean onlyAvailable,
-    @RequestParam(defaultValue = "EVENT_DATE") String sort,
-    @RequestParam(defaultValue = "0") Integer from,
-    @RequestParam(defaultValue = "10") Integer size,
-    HttpServletRequest request) {*/
 }
