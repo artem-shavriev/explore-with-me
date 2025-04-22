@@ -424,7 +424,7 @@ public class EventServiceImpl implements EventService {
 
                 return eventsViewsMap;
             } else {
-               return eventsViewsMap;
+                return eventsViewsMap;
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -459,43 +459,6 @@ public class EventServiceImpl implements EventService {
         log.info("Просмотры события добавлены для списка short событий.");
         return shortEvents;
     }
-
-   /* @Override
-    @Transactional
-    public List<EventShortDto> setViewsForShortDto(List<Event> events) {
-        List<EventShortDto> shortEvents = new ArrayList<>();
-        List<String> uris = new ArrayList<>();
-
-        events.forEach(event -> {
-            uris.add("/events/" + event.getId());
-        });
-
-        Map<String, Long> mapOfViews = getMapOfViewsAndEventUri(uris);
-
-        for (Event event : events) {
-            String uri = "/events/" + event.getId();
-
-
-            Long views = getViews(uri);
-            shortEvents.add(eventMapper.eventToShortDto(event, views));
-        }
-
-        log.info("Просмотры события добавлены для списка short событий.");
-        return shortEvents;
-    }*/
-
-    /*public List<EventFullDto> setViewsForFullDto(List<Event> events) {
-        List<EventFullDto> fullEvents = new ArrayList<>();
-
-        for (Event event : events) {
-            String uri = "/events/" + event.getId();
-            Long views = getViews(uri);
-            fullEvents.add(eventMapper.eventToFullDto(event, views));
-        }
-
-        log.info("Просмотры события добавлены для списка full событий.");
-        return fullEvents;
-    }*/
 
     public List<EventFullDto> setViewsForFullDto(List<Event> events) {
         List<EventFullDto> fullEvents = new ArrayList<>();
