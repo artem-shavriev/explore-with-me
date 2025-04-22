@@ -46,7 +46,7 @@ public class CommentService {
             throw new ValidationException("На событие нельзя оставить комментарий так как оно не опубликовано.");
         }
 
-        if(participationRequestRepository.findByRequesterIdAndEventId(userId, eventId).isEmpty()) {
+        if (participationRequestRepository.findByRequesterIdAndEventId(userId, eventId).isEmpty()) {
             throw new NotFoundException("Пользователь не может оставить коментарий к событию на участие" +
                     "в котором он не подавал заявку.");
         }
