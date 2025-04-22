@@ -2,9 +2,9 @@ server:
   port: 8080
 
 stats-server:
-  #url: http://stats-server:9090
+  url: http://stats-server:9090
 #  локально
-  url: http://localhost:9090
+  #url: http://localhost:9090
 
 spring:
   jpa:
@@ -19,8 +19,8 @@ spring:
 
   datasource:
 #    локально
-    url: jdbc:postgresql://localhost:7432/ewm-db
-    #url: jdbc:postgresql://ewm-db:5432/ewm-db
+    #url: jdbc:postgresql://localhost:7432/ewm-db
+    url: jdbc:postgresql://ewm-db:5432/ewm-db
     driver-class-name: org.postgresql.Driver
     username: user
     password: pass
