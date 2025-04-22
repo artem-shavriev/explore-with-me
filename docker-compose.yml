@@ -13,8 +13,6 @@ services:
     build:
       context: ./stats-service/server
       dockerfile: Dockerfile
-#    image: s-server-image //вместо этой строки с указанием
-#    образа приложегния , строка с указанием на путь к докер файлу приложения.
     ports:
       - "9090:9090"
     depends_on:
@@ -28,6 +26,7 @@ services:
       - "8080:8080"
     depends_on:
       - ewm-db
+      - stats-server
 
   ewm-db:
     image: postgres:16.1
@@ -37,4 +36,4 @@ services:
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: pass
-      POSTGRES_DB: ewm
+      POSTGRES_DB: ewm-db

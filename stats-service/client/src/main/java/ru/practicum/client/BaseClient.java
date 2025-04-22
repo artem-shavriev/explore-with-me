@@ -1,5 +1,6 @@
 package ru.practicum.client;
 
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -74,5 +75,9 @@ public class BaseClient {
         }
 
         return responseBuilder.build();
+    }
+
+    protected <T> ResponseEntity<T> getTyped(String path, ParameterizedTypeReference<T> responseType) {
+        return rest.exchange(path, HttpMethod.GET, new HttpEntity<>(defaultHeaders(null)), responseType);
     }
 }
