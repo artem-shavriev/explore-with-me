@@ -17,7 +17,6 @@ import ru.practicum.participation.ParticipationRequestRepository;
 import ru.practicum.participation.model.ParticipationRequest;
 import ru.practicum.participation.model.Status;
 import ru.practicum.user.UserRepository;
-import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -47,13 +46,13 @@ public class CommentService {
             throw new ValidationException("На событие нельзя оставить комментарий так как оно не опубликовано.");
         }
 
-        if(participationRequestRepository.findAllByRequesterAndEvent(userId, eventId).isEmpty()) {
+        if(participationRequestRepository.findByRequesterIdAndEventId(userId, eventId).isEmpty()) {
             throw new NotFoundException("Пользователь не может оставить коментарий к событию на участие" +
                     "в котором он не подавал заявку.");
         }
 
         List<ParticipationRequest> participationRequest = participationRequestRepository
-                .findAllByRequesterAndEvent(userId, eventId);
+                .findByRequesterIdAndEventId(userId, eventId);
 
         if (!participationRequest.getFirst().getStatus().equals(Status.CONFIRMED)) {
             throw new ValidationException("Пользователь не может оставить комменатрий так как его запрос " +
@@ -156,21 +155,19 @@ public class CommentService {
             throw new ValidationException("Изменить статус комментария нельзя. Так как статус не PENDING");
         }
 
-        CommentStatus status = stringStatusToEnum(commentDtoUpdate.getStatus());
+        try {
+        CommentStatus status = CommentStatus.valueOf(commentDtoUpdate.getStatus());
+
         comment.setStatus(status);
         comment = commentRepository.save(comment);
 
-        log.info("Статус комментария с id {} обновлен администратором на {}", commentId, status);
-        return commentMapper.mapToCommentDto(comment);
-    }
 
-    public CommentStatus stringStatusToEnum(String string) {
-        return switch (string) {
-            case "PUBLISHED" -> CommentStatus.PUBLISHED;
-            case "CANCELED" -> CommentStatus.CANCELED;
-            case "PENDING" -> CommentStatus.PENDING;
-            default -> throw new NotFoundException("Неизвестный статус.");
-        };
+        log.info("Статус комментария с id {} обновлен администратором на {}", commentId, status);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Ошибка парсинга Status");
+        }
+
+        return commentMapper.mapToCommentDto(comment);
     }
 }
 
