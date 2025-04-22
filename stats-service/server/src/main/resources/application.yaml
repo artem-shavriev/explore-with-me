@@ -14,8 +14,8 @@ spring:
 
   datasource:
 #    локально
-    #url: jdbc:postgresql://localhost:6432/stats
-    url: jdbc:postgresql://stats-db:5432/stats
+    url: jdbc:postgresql://localhost:6432/stats
+    #url: jdbc:postgresql://stats-db:5432/stats
     driver-class-name: org.postgresql.Driver
     username: user
     password: pass

@@ -100,7 +100,9 @@ public class CommentService {
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден."));
 
         List<Comment> comments = commentRepository.findAllByAuthorId(authorId);
-
+        if (comments.isEmpty()) {
+            throw new NotFoundException("Пользователь не оставлял комментариев.");
+        }
         log.info("Коментарии пользователя с id {} получены.", authorId);
         return commentMapper.mapToCommentDto(comments);
     }
@@ -115,6 +117,10 @@ public class CommentService {
 
         List<Comment> comments = commentRepository
                 .findByEventIdAndStatus(eventId, CommentStatus.PUBLISHED);
+
+        if (comments.isEmpty()) {
+            throw new NotFoundException("У события еще нет комментариев.");
+        }
 
         log.info("Комментарии события с id {} получены.", eventId);
         return commentMapper.mapToCommentDto(comments);

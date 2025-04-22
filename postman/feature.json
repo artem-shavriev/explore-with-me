@@ -7,293 +7,10 @@
   },
   "item": [
     {
-      "name": "Подготовка",
-      "item": [
-        {
-          "name": "Добавить пользователя 1",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  ""
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"ivan.petrov@practicummail.ru\",\n  \"name\": \"Иван Петров\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/users",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Добавить пользователя 2",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"leonid.petrov@practicummail.ru\",\n  \"name\": \"Леонид\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/users",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "users"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Добавить категорию 1",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Активный отдых\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/categories",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "categories"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Добавить событие 1",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\n  \"category\": 1,\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\n  \"eventDate\": \"2025-05-31 15:10:05\",\n  \"location\": {\n    \"lat\": 55.754167,\n    \"lon\": 37.62\n  },\n  \"paid\": true,\n  \"participantLimit\": 10,\n  \"requestModeration\": false,\n  \"title\": \"Сплав на байдарках\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/users/1/events",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "users",
-                "1",
-                "events"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Добавить событие 2",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"annotation\": \"Сплав на байдарках похож на полет.\",\n  \"category\": 1,\n  \"description\": \"Сплав на байдарках похож на полет. На спокойной воде — это парение. На бурной, порожистой — выполнение фигур высшего пилотажа. И то, и другое дарят чувство обновления, феерические эмоции, яркие впечатления.\",\n  \"eventDate\": \"2025-06-31 15:10:05\",\n  \"location\": {\n    \"lat\": 55.754167,\n    \"lon\": 37.62\n  },\n  \"paid\": true,\n  \"participantLimit\": 10,\n  \"requestModeration\": false,\n  \"title\": \"Сплав на байдарках\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/users/2/events",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "users",
-                "2",
-                "events"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Публикация события 1",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"stateAction\": \"PUBLISH_EVENT\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/events/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "events",
-                "1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Публикация события 2",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"stateAction\": \"PUBLISH_EVENT\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/events/2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "events",
-                "2"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Запрос на участие в событии 2 от пользователя 1",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/users/1/requests?eventId=2",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "users",
-                "1",
-                "requests"
-              ],
-              "query": [
-                {
-                  "key": "eventId",
-                  "value": "2"
-                }
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Подтверждение запроса на участия в событии 2",
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"requestIds\": [\n    1\n  ],\n  \"status\": \"CONFIRMED\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/users/2/events/2/requests",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "users",
-                "2",
-                "events",
-                "2",
-                "requests"
-              ]
-            }
-          },
-          "response": []
-        }
-      ]
-    },
-    {
       "name": "Тесты комментариев",
       "item": [
         {
-          "name": "Добавить комментарий пользователем 1 на событие 2",
+          "name": "Добавить комментарий пользователем 18 на событие 8 Copy",
           "event": [
             {
               "listen": "test",
@@ -317,7 +34,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"text\": \"Комментарий на событие 2 от пользователя 1\"\n}",
+              "raw": "{\n  \"text\": \"Комментарий на событие id: 8 от пользователя id: 18\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -325,7 +42,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/user/comments/1/2",
+              "raw": "http://localhost:8080/user/comments/18/8",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -334,15 +51,15 @@
               "path": [
                 "user",
                 "comments",
-                "1",
-                "2"
+                "18",
+                "8"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Добавить комментарий пользователем 2 на событие 1. Без запроса не посещение.",
+          "name": "Добавить комментарий пользователем 2 на событие 7. Без запроса не посещение.",
           "event": [
             {
               "listen": "test",
@@ -365,7 +82,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"text\": \"Комментарий на событие 1 от пользователя 2\"\n}",
+              "raw": "{\n  \"text\": \"Комментарий на событие id: 7 от пользователя id: 2\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -373,7 +90,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/user/comments/2/1",
+              "raw": "http://localhost:8080/user/comments/2/7",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -383,7 +100,7 @@
                 "user",
                 "comments",
                 "2",
-                "1"
+                "7"
               ]
             }
           },
@@ -413,7 +130,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"text\": \"Обновленный комментарий 1\"\n}",
+              "raw": "{\n  \"text\": \"Обновленный комментарий id: 1 пользователем id: 18\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -421,7 +138,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/user/comments/1/1",
+              "raw": "http://localhost:8080/user/comments/18/1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -430,7 +147,7 @@
               "path": [
                 "user",
                 "comments",
-                "1",
+                "18",
                 "1"
               ]
             }
@@ -593,7 +310,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"text\": \"Обновленный комментарий 1\"\n}",
+              "raw": "{\n  \"text\": \"Обновление пользователем id: 18 опубликованного комментария id: 1\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -601,7 +318,7 @@
               }
             },
             "url": {
-              "raw": "http://localhost:8080/user/comments/1/1",
+              "raw": "http://localhost:8080/user/comments/18/1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -610,7 +327,7 @@
               "path": [
                 "user",
                 "comments",
-                "1",
+                "18",
                 "1"
               ]
             }
@@ -640,7 +357,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/comments/2",
+              "raw": "http://localhost:8080/comments/8",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -648,14 +365,14 @@
               "port": "8080",
               "path": [
                 "comments",
-                "2"
+                "8"
               ]
             }
           },
           "response": []
         },
         {
-          "name": "Получить комментарии пользователя 1",
+          "name": "Получить комментарии пользователя 18",
           "event": [
             {
               "listen": "test",
@@ -677,7 +394,7 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/user/comments/1",
+              "raw": "http://localhost:8080/user/comments/18",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -686,7 +403,7 @@
               "path": [
                 "user",
                 "comments",
-                "1"
+                "18"
               ]
             }
           },
@@ -700,8 +417,8 @@
               "script": {
                 "exec": [
                   "let serverResponse = pm.response;",
-                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
-                  "pm.response.to.be.ok;",
+                  "pm.test(\"Ответ должен содержать код статуса 204 и данные в формате json\", function() {",
+                  "pm.response.to.be.success;",
                   "});"
                 ],
                 "type": "text/javascript",
@@ -713,7 +430,7 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "http://localhost:8080/user/comments/1/1",
+              "raw": "http://localhost:8080/user/comments/18/1",
               "protocol": "http",
               "host": [
                 "localhost"
@@ -722,8 +439,140 @@
               "path": [
                 "user",
                 "comments",
-                "1",
+                "18",
                 "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Добавить  второй комментарий пользователем 18 на событие 8",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Комментарий на событие id: 8 от пользователя id: 18\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/user/comments/18/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "user",
+                "comments",
+                "18",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Обновить статус комментария 2 на Published",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PUBLISHED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/admin/comments/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "admin",
+                "comments",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Удалить коммент администратором",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 204 и данные в формате json\", function() {",
+                  "pm.response.to.be.success;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/admin/comments/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "admin",
+                "comments",
+                "2"
               ]
             }
           },
