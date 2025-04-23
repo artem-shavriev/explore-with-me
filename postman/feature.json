@@ -7,7 +7,7 @@
   },
   "item": [
     {
-      "name": "Тесты комментариев",
+      "name": "Private",
       "item": [
         {
           "name": "Добавить комментарий пользователем 18 на событие 8 Copy",
@@ -155,44 +155,6 @@
           "response": []
         },
         {
-          "name": "Удалить неопубликованный коммент администратором",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let serverResponse = pm.response;",
-                  "pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function() {",
-                  "pm.response.to.be.badRequest;",
-                  "pm.response.to.be.withBody;",
-                  "pm.response.to.be.json;",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "DELETE",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/admin/comments/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "comments",
-                "1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
           "name": "Обновить статус комментария на Published",
           "event": [
             {
@@ -202,53 +164,6 @@
                   "let serverResponse = pm.response;",
                   "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
                   "pm.response.to.be.ok;",
-                  "pm.response.to.be.withBody;",
-                  "pm.response.to.be.json;",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "PATCH",
-            "header": [],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"status\": \"PUBLISHED\"\n}",
-              "options": {
-                "raw": {
-                  "language": "json"
-                }
-              }
-            },
-            "url": {
-              "raw": "http://localhost:8080/admin/comments/1",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "admin",
-                "comments",
-                "1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Обновить статус комментария на Published со статусом PUBLISHED",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let serverResponse = pm.response;",
-                  "pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function() {",
-                  "pm.response.to.be.badRequest;",
                   "pm.response.to.be.withBody;",
                   "pm.response.to.be.json;",
                   "});"
@@ -329,81 +244,6 @@
                 "comments",
                 "18",
                 "1"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Получить комментарии события 2",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let serverResponse = pm.response;",
-                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
-                  "pm.response.to.be.ok;",
-                  "pm.response.to.be.withBody;",
-                  "pm.response.to.be.json;",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/comments/8",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "comments",
-                "8"
-              ]
-            }
-          },
-          "response": []
-        },
-        {
-          "name": "Получить комментарии пользователя 18",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "let serverResponse = pm.response;",
-                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
-                  "pm.response.to.be.ok;",
-                  "pm.response.to.be.withBody;",
-                  "pm.response.to.be.json;",
-                  "});"
-                ],
-                "type": "text/javascript",
-                "packages": {}
-              }
-            }
-          ],
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "http://localhost:8080/user/comments/18",
-              "protocol": "http",
-              "host": [
-                "localhost"
-              ],
-              "port": "8080",
-              "path": [
-                "user",
-                "comments",
-                "18"
               ]
             }
           },
@@ -496,6 +336,98 @@
           "response": []
         },
         {
+          "name": "Добавить  третий комментарий пользователем 18 на событие 8 Copy",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"text\": \"Комментарий на событие id: 8 от пользователя id: 18\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/user/comments/18/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "user",
+                "comments",
+                "18",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Удалить неопубликованный коммент администратором",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 400 и данные в формате json\", function() {",
+                  "pm.response.to.be.badRequest;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/admin/comments/2",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "admin",
+                "comments",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Обновить статус комментария 2 на Published",
           "event": [
             {
@@ -543,6 +475,53 @@
           "response": []
         },
         {
+          "name": "Обновить статус комментария 3 на Published",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"PUBLISHED\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/admin/comments/3",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "admin",
+                "comments",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
           "name": "Удалить коммент администратором",
           "event": [
             {
@@ -553,6 +532,17 @@
                   "pm.test(\"Ответ должен содержать код статуса 204 и данные в формате json\", function() {",
                   "pm.response.to.be.success;",
                   "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "exec": [
+                  "",
+                  ""
                 ],
                 "type": "text/javascript",
                 "packages": {}
@@ -573,6 +563,86 @@
                 "admin",
                 "comments",
                 "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Получить комментарии события 2",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/comments/8",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "comments",
+                "8"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Получить комментарии пользователя 18",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "let serverResponse = pm.response;",
+                  "pm.test(\"Ответ должен содержать код статуса 200 и данные в формате json\", function() {",
+                  "pm.response.to.be.ok;",
+                  "pm.response.to.be.withBody;",
+                  "pm.response.to.be.json;",
+                  "});"
+                ],
+                "type": "text/javascript",
+                "packages": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/user/comments/18",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "user",
+                "comments",
+                "18"
               ]
             }
           },

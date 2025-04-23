@@ -5,10 +5,7 @@ import org.springframework.stereotype.Component;
 import ru.practicum.comment.dto.CommentDto;
 import ru.practicum.comment.dto.NewCommentDto;
 import ru.practicum.comment.model.Comment;
-import ru.practicum.event.EventRepository;
 import ru.practicum.event.model.Event;
-import ru.practicum.exception.NotFoundException;
-import ru.practicum.user.UserRepository;
 import ru.practicum.user.model.User;
 
 import java.util.List;
