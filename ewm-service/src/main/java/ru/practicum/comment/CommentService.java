@@ -17,6 +17,7 @@ import ru.practicum.participation.ParticipationRequestRepository;
 import ru.practicum.participation.model.ParticipationRequest;
 import ru.practicum.participation.model.Status;
 import ru.practicum.user.UserRepository;
+import ru.practicum.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +36,7 @@ public class CommentService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new NotFoundException("Событие для комментирования не найдено"));
 
-        userRepository.findById(userId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Комментатор не найден."));
 
         if (event.getInitiator().getId().equals(userId)) {
@@ -59,7 +60,7 @@ public class CommentService {
                     "на участвие в мероприятии не подтвержден.");
         }
 
-        Comment comment = commentMapper.newCommentDtoToComment(commentDto, userId, eventId);
+        Comment comment = commentMapper.newCommentDtoToComment(commentDto, user, event);
         comment.setStatus(CommentStatus.PENDING);
         comment.setCreated(LocalDateTime.now());
 

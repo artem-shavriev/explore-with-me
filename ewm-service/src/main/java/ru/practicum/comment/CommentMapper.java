@@ -16,15 +16,8 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class CommentMapper {
-    private final UserRepository userRepository;
-    private final EventRepository eventRepository;
 
-    public Comment newCommentDtoToComment(NewCommentDto commentDto, Integer userId, Integer eventId) {
-        User author = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("Пользователя не существует."));
-
-        Event event = eventRepository.findById(eventId)
-                .orElseThrow(() -> new NotFoundException("События не существует."));
+    public Comment newCommentDtoToComment(NewCommentDto commentDto, User author, Event event) {
 
         return Comment.builder().text(commentDto.getText()).author(author).event(event).build();
     }
