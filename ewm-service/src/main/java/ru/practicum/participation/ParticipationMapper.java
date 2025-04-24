@@ -38,7 +38,7 @@ public class ParticipationMapper {
                     .created(LocalDateTime.parse(participationRequestDto.getCreated(), formatter))
                     .status(Status.valueOf(participationRequestDto.getStatus())).build();
         } catch (Exception e) {
-            throw new IllegalArgumentException("Ошибка парсинка Status");
+            throw new IllegalArgumentException("Ошибка парсинга Status");
         }
     }
 }
