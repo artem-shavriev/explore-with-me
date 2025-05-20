@@ -169,9 +169,6 @@ docker-compose up -d
 | `GET`  | `/events`      | Поиск событий с фильтрами               | `text=""`<br>`categories=1,2`<br>`paid=true`<br>`rangeStart=2023-01-01`<br>`rangeEnd=2023-12-31`<br>`onlyAvailable=false`<br>`sort=EVENT_DATE`<br>`from=0`<br>`size=10` |
 | `GET`  | `/events/{id}` | Получить событие по ID                  | -                                                                                |
 
-
-### Сервис статистики: (`http://stats-server:9090`)
-
 ### 🔐 Error Responses
 ##### Common Errors
 
